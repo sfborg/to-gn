@@ -1,0 +1,28 @@
+---
+# This file shows default settings. To change any of the settings
+# uncomment them and modify the value.
+
+## DataSourceID may provide information which DataSaource ID should be
+## used for importing data to GN database.
+#
+# DataSourceID: 0
+
+## DbDatabase is the name of the GN databsae, default is `gnames`.
+#
+# DbDatabase: gnames
+
+## DbHost is the host of the GN database.
+#
+# DbHost: 0.0.0.0
+
+## DbUser is the user of the GN database with write privileges.
+#
+# DbUser: postgres
+
+## DbPass is the password to the GN database for the given DbUser.
+#
+# DbPass: postgres
+
+## JobsNum is the number of concurrent jobs to run.
+#
+# JobsNum: 4

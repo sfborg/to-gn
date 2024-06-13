@@ -22,17 +22,34 @@ THE SOFTWARE.
 package cmd
 
 import (
+	_ "embed"
+	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 
+	"github.com/gnames/gnsys"
 	togn "github.com/sfga/to-gn/pkg"
 	"github.com/sfga/to-gn/pkg/config"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+//go:embed to-gn.yaml
+var configText string
 
 var (
 	opts []config.Option
 )
+
+type fConfig struct {
+	DataSourceID int
+	DbDatabase   string
+	DbHost       string
+	DbUser       string
+	DbPass       string
+	JobsNum      int
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -41,6 +58,7 @@ var rootCmd = &cobra.Command{
 	Long: `Takes a path to an SFGA archive and installs its data
 to a GlobalNames database.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		versionFlag(cmd)
 		flags := []flagFunc{
 			dataSourceFlag,
 		}
@@ -85,13 +103,95 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	cobra.OnInitialize(initConfig)
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.to-gn.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.Flags().IntP("source", "s", -1, "Data Source ID")
+	rootCmd.Flags().BoolP("version", "V", false, "Show version number")
+}
+
+// initConfig reads in config file and ENV variables if set.
+func initConfig() {
+	configFile := "to-gn"
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		slog.Error("Cannot find user's config directory.", "error", err)
+		os.Exit(1)
+	}
+	viper.AddConfigPath(configDir)
+	viper.SetConfigName(configFile)
+
+	viper.BindEnv("DbDatabase", "TO_GN_DB_DATABASE")
+	viper.BindEnv("DbHost", "TO_GN_DB_HOST")
+	viper.BindEnv("DbUser", "TO_GN_DB_USER")
+	viper.BindEnv("DbPass", "TO_GN_DB_PASS")
+	viper.BindEnv("JobsNum", "TO_GN_JOBS_NUM")
+	viper.AutomaticEnv()
+
+	configPath := filepath.Join(configDir, fmt.Sprintf("%s.yaml", configFile))
+	touchConfigFile(configPath)
+
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		slog.Info("Using config file.", "file", viper.ConfigFileUsed())
+	}
+
+	opts = getOpts()
+}
+
+// getOpts imports data from the configuration file. These settings can be
+// overriden by command line flags.
+func getOpts() []config.Option {
+	var opts []config.Option
+	cfg := &fConfig{}
+	err := viper.Unmarshal(cfg)
+	if err != nil {
+		slog.Error("Cannot unmarshal config.", "error", err)
+		os.Exit(1)
+	}
+
+	if cfg.DataSourceID != 0 {
+		opts = append(opts, config.OptDataSourceID(cfg.DataSourceID))
+	}
+	if cfg.DbDatabase != "" {
+		opts = append(opts, config.OptDbDatabase(cfg.DbDatabase))
+	}
+	if cfg.DbHost != "" {
+		opts = append(opts, config.OptDbHost(cfg.DbHost))
+	}
+	if cfg.DbUser != "" {
+		opts = append(opts, config.OptDbUser(cfg.DbUser))
+	}
+	if cfg.DbPass != "" {
+		opts = append(opts, config.OptDbPass(cfg.DbPass))
+	}
+	if cfg.JobsNum != 0 {
+		opts = append(opts, config.OptJobsNum(cfg.JobsNum))
+	}
+	return opts
+}
+
+// touchConfigFile checks if config file exists, and if not, it gets created.
+func touchConfigFile(configPath string) {
+	exists, _ := gnsys.FileExists(configPath)
+	if exists {
+		return
+	}
+
+	slog.Info("Creating config file.", "file", configPath)
+	createConfig(configPath)
+}
+
+// createConfig creates config file.
+func createConfig(path string) {
+	err := gnsys.MakeDir(filepath.Dir(path))
+	if err != nil {
+		slog.Error("Cannot create config dir.", "error", err)
+		os.Exit(1)
+	}
+
+	err = os.WriteFile(path, []byte(configText), 0644)
+	if err != nil {
+		slog.Error("Cannot create config file.", "error", err)
+		os.Exit(1)
+	}
 }
