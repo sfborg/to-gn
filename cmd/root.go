@@ -29,8 +29,8 @@ import (
 	"path/filepath"
 
 	"github.com/gnames/gnsys"
-	togn "github.com/sfga/to-gn/pkg"
-	"github.com/sfga/to-gn/pkg/config"
+	togn "github.com/sfborg/to-gn/pkg"
+	"github.com/sfborg/to-gn/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

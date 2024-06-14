@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	togn "github.com/sfga/to-gn/pkg"
-	"github.com/sfga/to-gn/pkg/config"
+	togn "github.com/sfborg/to-gn/pkg"
+	"github.com/sfborg/to-gn/pkg/config"
 	"github.com/spf13/cobra"
 )
 

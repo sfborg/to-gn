@@ -1,18 +1,13 @@
 package togn
 
-import "github.com/gnames/gnlib/ent/gnvers"
-
-var (
-	// Version of the app. Hardcoded version appears only in release builds.
-	Version = "v0.0.1"
-
-	// Build timestamp
-	Build string
+import (
+	"github.com/gnames/gnlib/ent/gnvers"
 )
 
+var Version = "v0.0.1"
+var Build = "n/a"
+
+// GetVersion returns BHLnames version and build information.
 func GetVersion() gnvers.Version {
-	return gnvers.Version{
-		Version: Version,
-		Build:   Build,
-	}
+	return gnvers.Version{Version: Version, Build: Build}
 }

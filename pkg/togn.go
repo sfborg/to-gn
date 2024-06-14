@@ -3,7 +3,7 @@ package togn
 import (
 	"log/slog"
 
-	"github.com/sfga/to-gn/pkg/config"
+	"github.com/sfborg/to-gn/pkg/config"
 )
 
 type togn struct {

@@ -26,7 +26,7 @@ import (
 	"os"
 
 	"github.com/lmittmann/tint"
-	"github.com/sfga/to-gn/cmd"
+	"github.com/sfborg/to-gn/cmd"
 )
 
 func main() {
