@@ -1,9 +1,25 @@
 package config
 
+import (
+	"os"
+	"path/filepath"
+)
+
 type Config struct {
+	// MinVersionSFGA sets minimal version of SFGA archive schema
+	// that is needed for data extraction.
+	MinVersionSFGA string
+
 	// DataSourceID may provide information which DataSaource ID should be
 	// used for importing data to GN database.
 	DataSourceID int
+
+	// CacheDir keeps temporary directories for extracting and accessing
+	// SFGA data.
+	CacheDir string
+
+	// CacheDbDir is where SFGA database is downloaded.
+	CacheDbDir string
 
 	// DbDatabase is the name of the GN databsae, default is `gnames`.
 	DbDatabase string
@@ -60,15 +76,27 @@ func OptJobsNum(i int) Option {
 }
 
 func New(opts ...Option) Config {
+	tmpDir := os.TempDir()
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		cacheDir = tmpDir
+	}
+
+	cacheDir = filepath.Join(cacheDir, "sfborg", "to", "gn")
+
 	res := Config{
-		DataSourceID: 0,
-		DbDatabase:   "gnames",
-		DbHost:       "0.0.0.0",
-		DbUser:       "postgres",
-		DbPass:       "postgres",
+		MinVersionSFGA: "v1.2.1",
+		DataSourceID:   0,
+		CacheDir:       cacheDir,
+		DbDatabase:     "gnames",
+		DbHost:         "0.0.0.0",
+		DbUser:         "postgres",
+		DbPass:         "postgres",
 	}
 	for _, opt := range opts {
 		opt(&res)
 	}
+
+	res.CacheDbDir = filepath.Join(cacheDir, "db")
 	return res
 }
