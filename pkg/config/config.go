@@ -35,6 +35,9 @@ type Config struct {
 
 	// JobsNum is the number of concurrent jobs to run.
 	JobsNum int
+
+	// BatchSize sets the size of batch for insert statements.
+	BatchSize int
 }
 
 type Option func(*Config)
@@ -92,6 +95,7 @@ func New(opts ...Option) Config {
 		DbHost:         "0.0.0.0",
 		DbUser:         "postgres",
 		DbPass:         "postgres",
+		BatchSize:      50_000,
 	}
 	for _, opt := range opts {
 		opt(&res)

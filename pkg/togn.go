@@ -24,8 +24,14 @@ func New(cfg config.Config, sf sf.SF, gn gn.GN) (ToGN, error) {
 }
 
 func (t *togn) Export(sfgaPath string) error {
+	var err error
 	slog.Info("Extracting SFGArchive")
 	t.sf.Init()
+	slog.Info("Exporting vernacular names")
+	err = t.processVernacular()
+	if err != nil {
+		return err
+	}
 	slog.Info("Import to GN database finished", "path", sfgaPath)
 	return nil
 }

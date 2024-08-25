@@ -1,8 +1,10 @@
 package sfio
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 
 	"github.com/sfborg/sflib/ent/sfga"
 	"github.com/sfborg/to-gn/internal/ent/sf"
@@ -46,4 +48,55 @@ func (s *sfio) Init() error {
 
 func (s *sfio) VersionSFGA() string {
 	return s.sdb.Version()
+}
+
+func (s *sfio) GetVernNames(
+	ctx context.Context,
+	ch chan<- [][]string,
+) error {
+
+	// Postgres limits to 64k parameters, we need to adjust batch by the
+	// number of fields in the table.
+	batchSize := s.cfg.BatchSize / 2
+	q := `
+    SELECT DISTINCT
+     vernacular_name_id, dwc_vernacular_name
+    FROM vernaculars
+	`
+	rows, err := s.db.Query(q)
+	if err != nil {
+		slog.Error("Cannot get SFGA vernacuar names query", "error", err)
+		return err
+	}
+	defer rows.Close()
+
+	batch := make([][]string, 0, batchSize)
+	var count int
+	var id, vern string
+
+	for rows.Next() {
+		count++
+		err = rows.Scan(&id, &vern)
+		if err != nil {
+			slog.Error("Cannot read vernacular row", "error", err)
+			return err
+		}
+		batch = append(batch, []string{id, vern})
+		if count == batchSize {
+			count = 0
+			ch <- batch
+			batch = batch[:0]
+		}
+		// Check for context cancellation periodically
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+	}
+	if len(batch) > 0 {
+		ch <- batch
+	}
+	close(ch)
+	return nil
 }
