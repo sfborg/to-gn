@@ -27,8 +27,10 @@ func (t *togn) Export(sfgaPath string) error {
 	var err error
 	slog.Info("Extracting SFGArchive")
 	t.sf.Init()
-	slog.Info("Exporting vernacular names")
-	err = t.processVernacular()
+	slog.Info("Exporting name strings")
+	err = t.processNameStrings()
+	slog.Info("Exporting vernacular name strings")
+	err = t.processVernStrings()
 	if err != nil {
 		return err
 	}

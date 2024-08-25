@@ -9,6 +9,9 @@ type SF interface {
 	// VersionSFGA returns the schema version of SFGArchive.
 	VersionSFGA() string
 
-	// GetVernNames adds vernacular name-strings.
+	// GetNames gets unique name-strings
+	GetNames(context.Context, chan<- [][]string) error
+
+	// GetVernNames  gets unique vernacular name-strings.
 	GetVernNames(context.Context, chan<- [][]string) error
 }

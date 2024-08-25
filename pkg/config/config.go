@@ -95,7 +95,8 @@ func New(opts ...Option) Config {
 		DbHost:         "0.0.0.0",
 		DbUser:         "postgres",
 		DbPass:         "postgres",
-		BatchSize:      50_000,
+		// Max is 64K, we keep it less to avoid rounding error.
+		BatchSize: 63_000,
 	}
 	for _, opt := range opts {
 		opt(&res)

@@ -7,7 +7,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func (t *togn) processVernacular() error {
+func (t *togn) processVernStrings() error {
 	var err error
 	ch := make(chan [][]string)
 	ctx, cancel := context.WithCancel(context.Background())
