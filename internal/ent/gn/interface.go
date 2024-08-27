@@ -20,13 +20,25 @@ type GN interface {
 
 	// SetCanonicalsFull inserts unique name-strings to the database, ignoring
 	// ones that are entered already.
-	SetCanonicalsFull(ctx context.Context, ch <-chan []model.CanonicalFull) error
+	SetCanonicalsFull(
+		ctx context.Context,
+		ch <-chan []model.CanonicalFull,
+	) error
 
 	// SetCanonicalsStem inserts unique name-strings to the database, ignoring
 	// ones that are entered already.
-	SetCanonicalsStem(ctx context.Context, ch <-chan []model.CanonicalStem) error
+	SetCanonicalsStem(
+		ctx context.Context,
+		ch <-chan []model.CanonicalStem,
+	) error
 
 	// SetVernNames inserts unique vernacular name-strings to the database,
 	// ignoring ones that are entered already.
 	SetVernNames(ctx context.Context, ch <-chan [][]string) error
+
+	// SetVernIndices exports vernacular string indices information to GN.
+	SetVernIndices(
+		ctx context.Context,
+		ch <-chan []model.VernacularStringIndex,
+	) error
 }
