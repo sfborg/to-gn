@@ -97,6 +97,7 @@ func New(opts ...Option) Config {
 		DbPass:         "postgres",
 		// Max is 64K, we keep it less to avoid rounding error.
 		BatchSize: 63_000,
+		JobsNum:   4,
 	}
 	for _, opt := range opts {
 		opt(&res)

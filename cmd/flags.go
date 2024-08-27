@@ -30,3 +30,10 @@ func versionFlag(cmd *cobra.Command) {
 		os.Exit(0)
 	}
 }
+
+func jobsNumFlag(cmd *cobra.Command) {
+	i, _ := cmd.Flags().GetInt("jobs-number")
+	if i > 0 {
+		opts = append(opts, config.OptJobsNum(i))
+	}
+}
