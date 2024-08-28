@@ -64,7 +64,7 @@ to a GlobalNames database.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		versionFlag(cmd)
 		flags := []flagFunc{
-			dataSourceFlag, jobsNumFlag,
+			dataSourceFlag, dataSourceReleaseFlag, jobsNumFlag,
 		}
 		for _, v := range flags {
 			v(cmd)
@@ -126,6 +126,10 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.Flags().IntP("source", "s", -1, "Data Source ID")
+	rootCmd.Flags().StringP(
+		"source-release-date",
+		"r", "", "Data Source Release Date",
+	)
 	rootCmd.Flags().IntP("jobs-number", "j", 0, "Concurrent jobs number")
 	rootCmd.Flags().BoolP("version", "V", false, "Show version number")
 }

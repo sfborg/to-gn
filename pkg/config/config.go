@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 )
 
+var verSFGA = "v1.2.6"
+
 type Config struct {
 	// MinVersionSFGA sets minimal version of SFGA archive schema
 	// that is needed for data extraction.
@@ -13,6 +15,13 @@ type Config struct {
 	// DataSourceID may provide information which DataSaource ID should be
 	// used for importing data to GN database.
 	DataSourceID int
+
+	// DataSourceRelease provides release date of the imported data.
+	DataSourceRelease string
+
+	// DataSourceReleaseDate provides details when this version of
+	// data was released.
+	DataSourceReleaseDate string
 
 	// CacheDir keeps temporary directories for extracting and accessing
 	// SFGA data.
@@ -45,6 +54,12 @@ type Option func(*Config)
 func OptDataSourceID(i int) Option {
 	return func(cfg *Config) {
 		cfg.DataSourceID = i
+	}
+}
+
+func OptDataSourceRelease(s string) Option {
+	return func(cfg *Config) {
+		cfg.DataSourceRelease = s
 	}
 }
 
@@ -88,7 +103,7 @@ func New(opts ...Option) Config {
 	cacheDir = filepath.Join(cacheDir, "sfborg", "to", "gn")
 
 	res := Config{
-		MinVersionSFGA: "v1.2.1",
+		MinVersionSFGA: verSFGA,
 		DataSourceID:   0,
 		CacheDir:       cacheDir,
 		DbDatabase:     "gnames",

@@ -11,6 +11,7 @@ import (
 	"github.com/gnames/gnidump/pkg/ent/model"
 	"github.com/gnames/gnparser/ent/parsed"
 	"github.com/gnames/gnuuid"
+	"github.com/sfborg/to-gn/internal/ent/code"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -57,10 +58,10 @@ func (s *sfio) GetNameIndices(
 
 	q := `
     SELECT DISTINCT
-			dwc_taxon_id, dwc_scientific_name_id,
+			dwc_taxon_id, dwc_scientific_name_id, local_id, global_id,
 	    dwc_taxon_rank, dwc_accepted_name_usage_id,  
 	    dwc_higher_classification, higher_classification_ids,
-	    higher_classification_ranks
+	    higher_classification_ranks, dwc_nomenclatural_code
     FROM core
 	`
 	rows, err := s.db.Query(q)
@@ -72,20 +73,24 @@ func (s *sfio) GetNameIndices(
 
 	batch := make([]model.NameStringIndex, 0, batchSize)
 	var count int
-
+	var nomCode string
 	for rows.Next() {
 		nsi := model.NameStringIndex{DataSourceID: s.cfg.DataSourceID}
 		count++
 		err = rows.Scan(
-			&nsi.RecordID, &nsi.NameStringID,
+			&nsi.RecordID, &nsi.NameStringID, &nsi.LocalID, &nsi.GlobalID,
 			&nsi.Rank, &nsi.AcceptedRecordID,
 			&nsi.Classification, &nsi.ClassificationIDs,
 			&nsi.ClassificationRanks,
+			&nomCode,
 		)
 		if err != nil {
 			slog.Error("Cannot read name string index row", "error", err)
 			return err
 		}
+
+		nsi.OutlinkID = ""
+		nsi.CodeID = code.ToID(nomCode)
 		batch = append(batch, nsi)
 		if count == batchSize {
 			count = 0

@@ -1,6 +1,7 @@
 package togn
 
 import (
+	"errors"
 	"log/slog"
 
 	"github.com/sfborg/to-gn/internal/ent/gn"
@@ -15,6 +16,11 @@ type togn struct {
 }
 
 func New(cfg config.Config, sf sf.SF, gn gn.GN) (ToGN, error) {
+	if cfg.DataSourceID == 0 {
+		err := errors.New("data source id cannot be 0")
+		slog.Error("Please provide data-source ID", "error", err)
+		return nil, err
+	}
 	res := togn{
 		cfg: cfg,
 		sf:  sf,
@@ -52,6 +58,12 @@ func (t *togn) Export(sfgaPath string) error {
 		return err
 	}
 
-	slog.Info("Import to GN database finished", "path", sfgaPath)
+	slog.Info("Exporting data source information")
+	err = t.processDataSources()
+	if err != nil {
+		return err
+	}
+
+	slog.Info("Export to GN database finished", "path", sfgaPath)
 	return nil
 }

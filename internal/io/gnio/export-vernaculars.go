@@ -55,8 +55,9 @@ func (g *gnio) SetVernIndices(
 	chIdx <-chan []model.VernacularStringIndex,
 ) error {
 	var err error
+	var recNum int
 
-	err = g.cleanOldData(ctx)
+	err = g.cleanVSIData(ctx)
 	if err != nil {
 		return err
 	}
@@ -75,6 +76,7 @@ func (g *gnio) SetVernIndices(
 
 			rows = append(rows, row)
 		}
+		recNum += len(rows)
 
 		_, err := insertRows(g.db, "vernacular_string_indices", columns, rows)
 		if err != nil {
@@ -92,10 +94,13 @@ func (g *gnio) SetVernIndices(
 		default:
 		}
 	}
+	slog.Info("Finished adding vernacular string indices", "vern-num", recNum)
 	return nil
 }
 
-func (g *gnio) cleanOldData(ctx context.Context) error {
+// cleanVSIData removes old vernacular string indices for a
+// a data-source.
+func (g *gnio) cleanVSIData(ctx context.Context) error {
 	conn, err := g.db.Acquire(ctx)
 	if err != nil {
 		return err // Failed to get connection from pool

@@ -83,7 +83,7 @@ func (g *gnio) SetNameIndices(
 
 	var recNum int
 	columns := []string{
-		"data_source_id", "record_id", "name_string_id",
+		"data_source_id", "record_id", "local_id", "global_id", "name_string_id",
 		"code_id", "rank", "accepted_record_id",
 		"classification", "classification_ids", "classification_ranks",
 	}
@@ -93,8 +93,9 @@ func (g *gnio) SetNameIndices(
 		// TODO get real nomeclatural code_id
 		for i := range nsi {
 			row := []any{
-				g.cfg.DataSourceID, nsi[i].RecordID, nsi[i].NameStringID,
-				0, nsi[i].Rank, nsi[i].AcceptedRecordID,
+				g.cfg.DataSourceID, nsi[i].RecordID, nsi[i].LocalID,
+				nsi[i].GlobalID, nsi[i].NameStringID,
+				nsi[i].CodeID, nsi[i].Rank, nsi[i].AcceptedRecordID,
 				nsi[i].Classification, nsi[i].ClassificationIDs,
 				nsi[i].ClassificationRanks,
 			}
@@ -120,9 +121,12 @@ func (g *gnio) SetNameIndices(
 		progressReport(recNum, "name-string indices")
 	}
 	fmt.Fprintf(os.Stderr, "\r%s\r", strings.Repeat(" ", 80))
+	slog.Info("Finished exporting name indices", "names-num", recNum)
 	return nil
 }
 
+// cleanNSIData removes old name string indices data for the
+// given data-source.
 func (g *gnio) cleanNSIData(ctx context.Context) error {
 	conn, err := g.db.Acquire(ctx)
 	if err != nil {

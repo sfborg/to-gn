@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Add [#10]: data-source metadata.
+Add [#9]: name-string indices.
+Add [#8]: vernacular string incides.
+Add [#7]: name-strings with parsed data.
 Add [#6]: export vernacular strings.
 Add [#5]: export scientific name strings.
 Add [#4]: connect to SFGA database.

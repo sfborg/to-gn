@@ -40,4 +40,9 @@ type SF interface {
 		context.Context,
 		chan<- []model.VernacularStringIndex,
 	) error
+
+	// GetDataSource fetches data source information from SFGA
+	GetDataSource(
+		*model.DataSource,
+	) error
 }

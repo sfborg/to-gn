@@ -6,6 +6,7 @@ import (
 
 	"github.com/gnames/gnparser"
 	"github.com/sfborg/sflib/ent/sfga"
+	"github.com/sfborg/to-gn/internal/ent/ds"
 	"github.com/sfborg/to-gn/internal/ent/sf"
 	"github.com/sfborg/to-gn/pkg/config"
 )
@@ -15,6 +16,7 @@ type sfio struct {
 	arch    sfga.Archive
 	sdb     sfga.DB
 	db      *sql.DB
+	ds      *ds.DataSourceInfo
 	gnpPool chan gnparser.GNparser
 }
 
@@ -24,6 +26,9 @@ func New(cfg config.Config, arch sfga.Archive, db sfga.DB) sf.SF {
 		arch:    arch,
 		sdb:     db,
 		gnpPool: gnparser.NewPool(gnparser.NewConfig(), cfg.JobsNum),
+	}
+	if ds, ok := ds.DataSourcesInfoMap[cfg.DataSourceID]; ok {
+		res.ds = &ds
 	}
 	return res
 }
