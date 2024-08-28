@@ -50,6 +50,62 @@ func (s *sfio) GetNames(
 	return nil
 }
 
+func (s *sfio) GetNameIndices(
+	ctx context.Context,
+	chIdx chan<- []model.NameStringIndex) error {
+	batchSize := 50_000
+
+	q := `
+    SELECT DISTINCT
+			dwc_taxon_id, dwc_scientific_name_id,
+	    dwc_taxon_rank, dwc_accepted_name_usage_id,  
+	    dwc_higher_classification, higher_classification_ids,
+	    higher_classification_ranks
+    FROM core
+	`
+	rows, err := s.db.Query(q)
+	if err != nil {
+		slog.Error("Cannot get SFGA name string indices query", "error", err)
+		return err
+	}
+	defer rows.Close()
+
+	batch := make([]model.NameStringIndex, 0, batchSize)
+	var count int
+
+	for rows.Next() {
+		nsi := model.NameStringIndex{DataSourceID: s.cfg.DataSourceID}
+		count++
+		err = rows.Scan(
+			&nsi.RecordID, &nsi.NameStringID,
+			&nsi.Rank, &nsi.AcceptedRecordID,
+			&nsi.Classification, &nsi.ClassificationIDs,
+			&nsi.ClassificationRanks,
+		)
+		if err != nil {
+			slog.Error("Cannot read name string index row", "error", err)
+			return err
+		}
+		batch = append(batch, nsi)
+		if count == batchSize {
+			count = 0
+			chIdx <- batch
+			batch = batch[:0]
+		}
+		// Check for context cancellation periodically
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+	}
+	if len(batch) > 0 {
+		chIdx <- batch
+	}
+	close(chIdx)
+	return nil
+}
+
 func (s *sfio) loadNames(ctx context.Context, chIn chan<- string) error {
 	q := `
     SELECT distinct dwc_scientific_name

@@ -24,13 +24,19 @@ type SF interface {
 		chCS chan<- []model.CanonicalStem,
 	) error
 
+	// GetNameIndices retrieves name string indices information
+	// from SFGA archive.
+	GetNameIndices(
+		context.Context,
+		chan<- []model.NameStringIndex,
+	) error
+
 	// GetVernNames gets unique vernacular name-strings.
 	GetVernNames(context.Context, chan<- [][]string) error
 
 	// GetVernIndices retrieves vernacular names indices information
 	// from SFGA archive.
 	GetVernIndices(
-		*errgroup.Group,
 		context.Context,
 		chan<- []model.VernacularStringIndex,
 	) error

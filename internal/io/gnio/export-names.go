@@ -64,14 +64,81 @@ func (g *gnio) SetNames(
 		}
 
 		recNum += len(n)
-		progressReport(recNum)
+		progressReport(recNum, "name-strings")
 	}
 	fmt.Fprintf(os.Stderr, "\r%s\r", strings.Repeat(" ", 80))
 	return nil
 }
 
-func progressReport(recNum int) {
-	str := fmt.Sprintf("Exported %00000d name-strings", recNum)
+func (g *gnio) SetNameIndices(
+	ctx context.Context,
+	chIdx <-chan []model.NameStringIndex,
+) error {
+	var err error
+
+	err = g.cleanNSIData(ctx)
+	if err != nil {
+		return err
+	}
+
+	var recNum int
+	columns := []string{
+		"data_source_id", "record_id", "name_string_id",
+		"code_id", "rank", "accepted_record_id",
+		"classification", "classification_ids", "classification_ranks",
+	}
+	for nsi := range chIdx {
+		recNum += len(nsi)
+		rows := make([][]any, 0, len(nsi))
+		// TODO get real nomeclatural code_id
+		for i := range nsi {
+			row := []any{
+				g.cfg.DataSourceID, nsi[i].RecordID, nsi[i].NameStringID,
+				0, nsi[i].Rank, nsi[i].AcceptedRecordID,
+				nsi[i].Classification, nsi[i].ClassificationIDs,
+				nsi[i].ClassificationRanks,
+			}
+
+			rows = append(rows, row)
+		}
+
+		_, err := insertRows(g.db, "name_string_indices", columns, rows)
+		if err != nil {
+			slog.Error(
+				"Cannot insert rows to name_string_indices table",
+				"error", err,
+			)
+			for range chIdx {
+			}
+			return err
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+		progressReport(recNum, "name-string indices")
+	}
+	fmt.Fprintf(os.Stderr, "\r%s\r", strings.Repeat(" ", 80))
+	return nil
+}
+
+func (g *gnio) cleanNSIData(ctx context.Context) error {
+	conn, err := g.db.Acquire(ctx)
+	if err != nil {
+		return err // Failed to get connection from pool
+	}
+	defer conn.Release()
+	q := `DELETE FROM name_string_indices WHERE data_source_id = $1`
+	_, err = conn.Exec(ctx, q, g.cfg.DataSourceID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func progressReport(recNum int, ent string) {
+	str := fmt.Sprintf("Exported %d %s", recNum, ent)
 	fmt.Fprintf(os.Stderr, "\r%s", strings.Repeat(" ", 80))
 	fmt.Fprintf(os.Stderr, "\r%s", str)
 }

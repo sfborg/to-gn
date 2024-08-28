@@ -32,6 +32,12 @@ type GN interface {
 		ch <-chan []model.CanonicalStem,
 	) error
 
+	// SetVernIndices exports vernacular string indices information to GN.
+	SetNameIndices(
+		ctx context.Context,
+		ch <-chan []model.NameStringIndex,
+	) error
+
 	// SetVernNames inserts unique vernacular name-strings to the database,
 	// ignoring ones that are entered already.
 	SetVernNames(ctx context.Context, ch <-chan [][]string) error

@@ -75,3 +75,34 @@ func (t *togn) processNameStrings() error {
 
 	return nil
 }
+
+func (t *togn) processNameIndices() error {
+	var err error
+	chIdx := make(chan []model.NameStringIndex)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	g, ctx := errgroup.WithContext(ctx)
+
+	g.Go(func() error {
+		err = t.sf.GetNameIndices(ctx, chIdx)
+		if err != nil {
+			slog.Error("GetNameIndices", "error", err)
+		}
+		return err
+	})
+
+	g.Go(func() error {
+		err = t.gn.SetNameIndices(ctx, chIdx)
+		if err != nil {
+			slog.Error("SetNameIndices", "error", err)
+		}
+		return err
+	})
+
+	if err = g.Wait(); err != nil {
+		slog.Error("Error in go routines", "error", err)
+		return err
+	}
+
+	return nil
+}

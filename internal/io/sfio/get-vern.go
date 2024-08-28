@@ -5,7 +5,6 @@ import (
 	"log/slog"
 
 	"github.com/gnames/gnidump/pkg/ent/model"
-	"golang.org/x/sync/errgroup"
 )
 
 func (s *sfio) GetVernNames(
@@ -60,7 +59,6 @@ func (s *sfio) GetVernNames(
 }
 
 func (s *sfio) GetVernIndices(
-	g *errgroup.Group,
 	ctx context.Context,
 	chIdx chan<- []model.VernacularStringIndex) error {
 	batchSize := s.cfg.BatchSize / 8

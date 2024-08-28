@@ -34,6 +34,12 @@ func (t *togn) Export(sfgaPath string) error {
 		return err
 	}
 
+	slog.Info("Exporting name string indices")
+	err = t.processNameIndices()
+	if err != nil {
+		return err
+	}
+
 	slog.Info("Exporting vernacular name strings")
 	err = t.processVernStrings()
 	if err != nil {

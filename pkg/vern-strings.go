@@ -47,9 +47,9 @@ func (t *togn) processVernIndices() error {
 	g, ctx := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
-		err = t.sf.GetVernIndices(g, ctx, chIdx)
+		err = t.sf.GetVernIndices(ctx, chIdx)
 		if err != nil {
-			slog.Error("GetVernNames", "error", err)
+			slog.Error("GetVernIndices", "error", err)
 		}
 		return err
 	})
@@ -57,7 +57,7 @@ func (t *togn) processVernIndices() error {
 	g.Go(func() error {
 		err = t.gn.SetVernIndices(ctx, chIdx)
 		if err != nil {
-			slog.Error("SetVernNames", "error", err)
+			slog.Error("SetVernIndices", "error", err)
 		}
 		return err
 	})
