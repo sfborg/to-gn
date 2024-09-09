@@ -37,7 +37,7 @@ func (t *togn) processDataSources() error {
 	g.Go(func() error {
 		err = t.gn.VernNum(ctx, &ds)
 		if err != nil {
-			slog.Error("VernNus", "error", err)
+			slog.Error("VernNum", "error", err)
 		}
 		return err
 	})

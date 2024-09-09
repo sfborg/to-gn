@@ -412,6 +412,7 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 		TitleShort:     "World Checklist of Vascular Plants",
 		UUID:           "814d1a77-2234-449b-af4a-138e0e1b1326",
 		HomeURL:        "https://wcvp.science.kew.org/",
+		DataURL:        "https://sftp.kew.org/pub/data-repositories/WCVP/wcvp_dwca.zip",
 		IsOutlinkReady: true,
 		OutlinkURL:     "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:{}",
 		OutlinkID: func(n NameInfo) string {
