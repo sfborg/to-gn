@@ -77,6 +77,7 @@ to a GlobalNames database.`,
 			os.Exit(0)
 		}
 
+		// path to SFGA archive
 		sfgaPath := args[0]
 		slog.Info("Exporting SFGA data to GN database", "path", sfgaPath)
 
