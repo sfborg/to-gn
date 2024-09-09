@@ -25,6 +25,13 @@ func dataSourceReleaseFlag(cmd *cobra.Command) {
 	}
 }
 
+func dataSourceReleaseNameFlag(cmd *cobra.Command) {
+	s, _ := cmd.Flags().GetString("source-release-version")
+	if s != "" {
+		opts = append(opts, config.OptDataSourceRelease(s))
+	}
+}
+
 func versionFlag(cmd *cobra.Command) {
 	b, _ := cmd.Flags().GetBool("version")
 	if b {

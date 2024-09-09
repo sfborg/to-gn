@@ -5,7 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v0.0.1] - 2024-09-09
+## [v0.0.2] - 2024-09-09 Mon
+
+Add [#12]: Options for data-source release date and version.
+
+## [v0.0.1] - 2024-09-09 Mon
 
 Add: reset SFGA versions to v0.x.x (current v0.2.6).
 Add [#10]: data-source metadata.

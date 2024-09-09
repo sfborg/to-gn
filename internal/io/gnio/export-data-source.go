@@ -22,7 +22,7 @@ func (g *gnio) SetDataSource(d model.DataSource) error {
 		TitleShort:      dsi.TitleShort,
 		DOI:             d.DOI,
 		Description:     d.Description,
-		Version:         g.cfg.DataSourceRelease,
+		Version:         g.cfg.DataSourceReleaseVersion,
 		RevisionDate:    g.cfg.DataSourceReleaseDate,
 		WebsiteURL:      dsi.HomeURL,
 		DataURL:         dsi.DataURL,

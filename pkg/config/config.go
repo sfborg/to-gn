@@ -16,8 +16,8 @@ type Config struct {
 	// used for importing data to GN database.
 	DataSourceID int
 
-	// DataSourceRelease provides release date of the imported data.
-	DataSourceRelease string
+	// DataSourceReleaseVersion provides release version/name (eg v1.2.2).
+	DataSourceReleaseVersion string
 
 	// DataSourceReleaseDate provides details when this version of
 	// data was released.
@@ -59,7 +59,7 @@ func OptDataSourceID(i int) Option {
 
 func OptDataSourceRelease(s string) Option {
 	return func(cfg *Config) {
-		cfg.DataSourceRelease = s
+		cfg.DataSourceReleaseVersion = s
 	}
 }
 
