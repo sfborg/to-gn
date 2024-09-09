@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-var verSFGA = "v1.2.6"
+var verSFGA = "v0.2.6"
 
 type Config struct {
 	// MinVersionSFGA sets minimal version of SFGA archive schema

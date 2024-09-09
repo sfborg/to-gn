@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.1] - 2024-09-09
+
+Add: reset SFGA versions to v0.x.x (current v0.2.6).
 Add [#10]: data-source metadata.
 Add [#9]: name-string indices.
 Add [#8]: vernacular string incides.
