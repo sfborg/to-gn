@@ -1,0 +1,6 @@
+
+		export "TO_GN_DB_DATABASE"="gnames"
+		export "TO_GN_DB_HOST"="0.0.0.0"
+		export "TO_GN_DB_USER"="postgres"
+		export "TO_GN_DB_PASS"="postgres"
+		export "TO_GN_JOBS_NUM"="4"

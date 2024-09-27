@@ -172,25 +172,31 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 	113: {
 		Title:      "Zoological names",
 		TitleShort: "Zoological names",
+		UUID:       "691d5f8d-8e95-4406-a9d1-588af24b9550",
 	},
 	117: {
 		Title:      "Birds of Tansania",
 		TitleShort: "Birds of Tansania",
+		UUID:       "cdd4fda9-93a7-4546-9433-72691f20e15a",
 	},
 	119: {
 		Title:      "Tansania Plant Specimens",
 		TitleShort: "Tansania Plant Specimens",
+		UUID:       "2154d771-f470-49d6-bc41-bf057ccf5455",
 	},
 	142: {
 		Title:      "The Clements Checklist of Birds of the World",
 		TitleShort: "The Clements Checklist of Birds",
+		UUID:       "18e27f2d-ec02-4cd3-9297-491bd5a6cd10",
 	},
 	147: {
 		TitleShort: "VASCAN",
+		UUID:       "ddb164f4-045c-4b0c-b2b5-7772b12dcfe1",
 	},
 	149: {
 		Title:      "Ocean Biodiversity Information System",
 		TitleShort: "OBIS",
+		UUID:       "7c0e2feb-6385-4c72-b774-450a005b9f65",
 	},
 	155: {
 		TitleShort: "FishBase",
@@ -200,6 +206,7 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 	158: {
 		Title:          "European Nature Information System",
 		TitleShort:     "EUNIS",
+		UUID:           "f2f02791-aa2f-43fe-92db-70d496a86639",
 		Description:    "Find species, habitat types and protected sites across Europe ",
 		HomeURL:        "https://eunis.eea.europa.eu/",
 		IsOutlinkReady: true,
@@ -210,6 +217,7 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 	},
 	165: {
 		TitleShort: "Tropicos",
+		UUID:       "743b3e59-43bb-4cbc-97be-8f85c0cf0323",
 		Description: "The Tropicos database links over 1.33M scientific names " +
 			"with over 4.87M specimens and over 685K digital images. The data " +
 			"includes over 150K references from over 52.6K publications offered " +
@@ -366,6 +374,7 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 	193: {
 		Title:          "Myriatrix",
 		TitleShort:     "Myriatrix",
+		UUID:           "a93858b5-c7bf-4ace-96bb-8b0e6524302f",
 		HomeURL:        "http://myriatrix.myspecies.info",
 		IsOutlinkReady: true,
 		OutlinkURL:     "https://myriatrix.myspecies.info/myriatrix/{}",

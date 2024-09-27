@@ -14,12 +14,14 @@ func TestNew(t *testing.T) {
 	assert := assert.New(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	gn, err := gnio.New(config.New())
+	cfg := config.New()
+	config.LoadEnv(&cfg)
+	gn, err := gnio.New(cfg)
 	assert.Nil(err)
 	assert.NotNil(gn)
 	assert.Nil(gn.CheckDb(ctx))
 
-	cfg := config.New(config.OptDbHost("8.8.8.8"))
+	cfg = config.New(config.OptDbHost("8.8.8.8"))
 	gn, err = gnio.New(cfg)
 	assert.NotNil(gn.CheckDb(ctx))
 }

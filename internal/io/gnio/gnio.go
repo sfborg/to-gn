@@ -28,13 +28,7 @@ func New(cfg config.Config) (gn.GN, error) {
 }
 
 func (g *gnio) CheckDb(ctx context.Context) error {
-	conn, err := g.db.Acquire(ctx)
-	if err != nil {
-		return err // Failed to get connection from pool
-	}
-	defer conn.Release()
-
-	err = conn.Ping(ctx)
+	err := g.db.Ping(ctx)
 	if err != nil {
 		return err // Ping failed, likely no connection
 	}
