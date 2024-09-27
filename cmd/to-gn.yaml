@@ -4,20 +4,20 @@
 
 ## The name of the GN database, which defaults to 'gnames'.
 #
-# DbDatabase = gnames
+# DbDatabase: gnames
 
 ## The host where the GN database is located.
 #
-# DbHost = 0.0.0.0
+# DbHost: 0.0.0.0
 
 ## The username for accessing the GN database, with write privileges.
 #
-# DbUser = postgres
+# DbUser: postgres
 
 ## The password associated with the specified 'DbUser'.
 #
-# DbPass = postgres
+# DbPass: postgres
 
 ## The number of concurrent jobs to execute.
 #
-# JobsNum = 4
+# JobsNum: 4
