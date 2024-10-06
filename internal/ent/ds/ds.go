@@ -425,7 +425,7 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 		IsOutlinkReady: true,
 		OutlinkURL:     "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:{}",
 		OutlinkID: func(n NameInfo) string {
-			return n.RecordID
+			return n.LocalID
 		},
 	},
 	198: {
