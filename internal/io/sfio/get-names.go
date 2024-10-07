@@ -12,6 +12,7 @@ import (
 	"github.com/gnames/gnparser/ent/parsed"
 	"github.com/gnames/gnuuid"
 	"github.com/sfborg/to-gn/internal/ent/code"
+	"github.com/sfborg/to-gn/internal/ent/ds"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -59,6 +60,7 @@ func (s *sfio) GetNameIndices(
 	q := `
     SELECT DISTINCT
 			dwc_taxon_id, dwc_scientific_name_id, local_id, global_id,
+	    canonical, canonical_full,
 	    dwc_taxon_rank, dwc_accepted_name_usage_id,  
 	    dwc_higher_classification, higher_classification_ids,
 	    higher_classification_ranks, dwc_nomenclatural_code
@@ -71,14 +73,18 @@ func (s *sfio) GetNameIndices(
 	}
 	defer rows.Close()
 
+	dsi, dsExists := ds.DataSourcesInfoMap[s.cfg.DataSourceID]
+
 	batch := make([]model.NameStringIndex, 0, batchSize)
 	var count int
 	var nomCode string
 	for rows.Next() {
 		nsi := model.NameStringIndex{DataSourceID: s.cfg.DataSourceID}
+		var canonical, canonicalFull string
 		count++
 		err = rows.Scan(
 			&nsi.RecordID, &nsi.NameStringID, &nsi.LocalID, &nsi.GlobalID,
+			&canonical, &canonicalFull,
 			&nsi.Rank, &nsi.AcceptedRecordID,
 			&nsi.Classification, &nsi.ClassificationIDs,
 			&nsi.ClassificationRanks,
@@ -90,6 +96,17 @@ func (s *sfio) GetNameIndices(
 		}
 
 		nsi.OutlinkID = ""
+		if dsExists {
+			ns := ds.NameInfo{
+				RecordID:         nsi.RecordID,
+				AcceptedRecordID: nsi.AcceptedRecordID,
+				LocalID:          nsi.LocalID,
+				GlobalID:         nsi.GlobalID,
+				Canonical:        canonical,
+				CanonicalFull:    canonicalFull,
+			}
+			nsi.OutlinkID = dsi.OutlinkID(ns)
+		}
 		nsi.CodeID = code.ToID(nomCode)
 		batch = append(batch, nsi)
 		if count == batchSize {

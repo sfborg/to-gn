@@ -42,6 +42,9 @@ func intOpts() []Option {
 	}
 	for envVar, optFunc := range envToOpt {
 		val := os.Getenv(envVar)
+		if val == "" {
+			continue
+		}
 		i, err := strconv.Atoi(val)
 		if err != nil {
 			slog.Warn("Cannot convert to int", "env", envVar, "value", val)

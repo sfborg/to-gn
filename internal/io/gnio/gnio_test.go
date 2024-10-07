@@ -2,6 +2,7 @@ package gnio_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -16,6 +17,7 @@ func TestNew(t *testing.T) {
 	defer cancel()
 	cfg := config.New()
 	config.LoadEnv(&cfg)
+	fmt.Printf("\n\n%#v\n\n", cfg)
 	gn, err := gnio.New(cfg)
 	assert.Nil(err)
 	assert.NotNil(gn)

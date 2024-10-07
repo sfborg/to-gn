@@ -84,7 +84,7 @@ func (g *gnio) SetNameIndices(
 	var recNum int
 	columns := []string{
 		"data_source_id", "record_id", "local_id", "global_id", "name_string_id",
-		"code_id", "rank", "accepted_record_id",
+		"outlink_id", "code_id", "rank", "accepted_record_id",
 		"classification", "classification_ids", "classification_ranks",
 	}
 	for nsi := range chIdx {
@@ -94,7 +94,7 @@ func (g *gnio) SetNameIndices(
 		for i := range nsi {
 			row := []any{
 				g.cfg.DataSourceID, nsi[i].RecordID, nsi[i].LocalID,
-				nsi[i].GlobalID, nsi[i].NameStringID,
+				nsi[i].GlobalID, nsi[i].NameStringID, nsi[i].OutlinkID,
 				nsi[i].CodeID, nsi[i].Rank, nsi[i].AcceptedRecordID,
 				nsi[i].Classification, nsi[i].ClassificationIDs,
 				nsi[i].ClassificationRanks,
