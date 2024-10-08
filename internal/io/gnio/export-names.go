@@ -92,10 +92,15 @@ func (g *gnio) SetNameIndices(
 		rows := make([][]any, 0, len(nsi))
 		// TODO get real nomeclatural code_id
 		for i := range nsi {
+			acceptedID := nsi[i].AcceptedRecordID
+			if strings.TrimSpace(acceptedID) == "" {
+				acceptedID = nsi[i].RecordID
+			}
+
 			row := []any{
 				g.cfg.DataSourceID, nsi[i].RecordID, nsi[i].LocalID,
 				nsi[i].GlobalID, nsi[i].NameStringID, nsi[i].OutlinkID,
-				nsi[i].CodeID, nsi[i].Rank, nsi[i].AcceptedRecordID,
+				nsi[i].CodeID, nsi[i].Rank, acceptedID,
 				nsi[i].Classification, nsi[i].ClassificationIDs,
 				nsi[i].ClassificationRanks,
 			}
