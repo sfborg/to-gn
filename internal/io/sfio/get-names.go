@@ -96,7 +96,7 @@ func (s *sfio) GetNameIndices(
 		}
 
 		nsi.OutlinkID = ""
-		if dsExists {
+		if dsExists && dsi.OutlinkID != nil {
 			ns := ds.NameInfo{
 				RecordID:         nsi.RecordID,
 				AcceptedRecordID: nsi.AcceptedRecordID,
