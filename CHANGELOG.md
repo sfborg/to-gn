@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.0] - 2025-01-30 Thu
+
+Add: [#13] use coldp-based SFGA for import.
+
 ## [v0.1.0] - 2024-10-09 Wed
 
 Add: outlinkID to import.
@@ -27,6 +31,8 @@ Add: initial commit
 
 This document follows [changelog guidelines]
 
+[v0.2.0]: https://github.com/sfborg/to-gn/tree/v0.1.0...v0.2.0
+[v0.1.0]: https://github.com/sfborg/to-gn/tree/v0.0.0...v0.1.0
 [v0.0.0]: https://github.com/sfborg/to-gn/tree/v0.0.0
 [#20]: https://github.com/sfborg/to-gn/issues/20
 [#19]: https://github.com/sfborg/to-gn/issues/19

@@ -10,9 +10,12 @@ import (
 )
 
 type togn struct {
+	// cfg contains configuration data
 	cfg config.Config
-	sf  sf.SF
-	gn  gn.GN
+	// sf contains SFGA export functionality
+	sf sf.SF
+	// gn contains GNverifier importer
+	gn gn.GN
 }
 
 func New(cfg config.Config, sf sf.SF, gn gn.GN) (ToGN, error) {

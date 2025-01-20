@@ -26,6 +26,7 @@ type Meta struct {
 	RecordID string
 	LocalID  string
 	GlobalID string
+	NameID   string
 }
 
 // NameInfo provides fields associated with a name-string in a particular
@@ -35,6 +36,7 @@ type NameInfo struct {
 	AcceptedRecordID string
 	LocalID          string
 	GlobalID         string
+	NameID           string
 	Canonical        string
 	CanonicalFull    string
 }
@@ -409,12 +411,12 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 	196: {
 		TitleShort:     "World Flora Online",
 		UUID:           "39e7b959-9b16-460c-a77f-71934b7098e0",
-		HomeURL:        "http://www.worldfloraonline.org",
+		HomeURL:        "https://worldfloraonline.org",
 		Description:    "An Online Flora of All Known Plants",
 		IsOutlinkReady: true,
-		OutlinkURL:     "http://www.worldfloraonline.org/taxon/{}",
+		OutlinkURL:     "https://list.worldfloraonline.org/{}",
 		OutlinkID: func(n NameInfo) string {
-			return n.RecordID
+			return n.NameID
 		},
 	},
 	197: {

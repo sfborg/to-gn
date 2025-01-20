@@ -5,20 +5,23 @@ import (
 	"log/slog"
 
 	"github.com/gnames/gnidump/pkg/ent/model"
+	"github.com/gnames/gnuuid"
 )
+
+// Postgres limits to 64k parameters, we need to adjust batch by the
+// number of fields in the table.
+// We are insertning whole batch in one query that contains not more than
+// 64k fields.
+var paramsLimit = 63_000 // 64k is the limit.
 
 func (s *sfio) GetVernNames(
 	ctx context.Context,
 	ch chan<- [][]string,
 ) error {
-
-	// Postgres limits to 64k parameters, we need to adjust batch by the
-	// number of fields in the table.
-	batchSize := s.cfg.BatchSize / 2
+	// we need to make sure that batch can fit the insert query
+	batchSize := paramsLimit / 2
 	q := `
-    SELECT DISTINCT
-     vernacular_name_id, dwc_vernacular_name
-    FROM vernaculars
+    SELECT DISTINCT name FROM vernacular
 	`
 	rows, err := s.db.Query(q)
 	if err != nil {
@@ -29,15 +32,16 @@ func (s *sfio) GetVernNames(
 
 	batch := make([][]string, 0, batchSize)
 	var count int
-	var id, vern string
 
 	for rows.Next() {
+		var id, vern string
 		count++
-		err = rows.Scan(&id, &vern)
+		err = rows.Scan(&vern)
 		if err != nil {
 			slog.Error("Cannot read vernacular row", "error", err)
 			return err
 		}
+		id = gnuuid.New(vern).String()
 		batch = append(batch, []string{id, vern})
 		if count == batchSize {
 			count = 0
@@ -61,13 +65,13 @@ func (s *sfio) GetVernNames(
 func (s *sfio) GetVernIndices(
 	ctx context.Context,
 	chIdx chan<- []model.VernacularStringIndex) error {
-	batchSize := s.cfg.BatchSize / 8
+	batchSize := s.cfg.BatchSize
 
 	q := `
     SELECT DISTINCT
-     dwc_taxon_id, vernacular_name_id, dcterms_language,
-	   lang_code, dwc_locality, dwc_country_code 
-    FROM vernaculars
+     v.taxon_id, v.name, v.language,
+	   v.area, v.country
+    FROM vernacular v
 	`
 	rows, err := s.db.Query(q)
 	if err != nil {
@@ -82,14 +86,16 @@ func (s *sfio) GetVernIndices(
 	for rows.Next() {
 		vsi := model.VernacularStringIndex{DataSourceID: s.cfg.DataSourceID}
 		count++
+		var name string
 		err = rows.Scan(
-			&vsi.RecordID, &vsi.VernacularStringID, &vsi.Language,
-			&vsi.LangCode, &vsi.Locality, &vsi.CountryCode,
+			&vsi.RecordID, &name, &vsi.Language,
+			&vsi.Locality, &vsi.CountryCode,
 		)
 		if err != nil {
 			slog.Error("Cannot read vernacular string index row", "error", err)
 			return err
 		}
+		vsi.VernacularStringID = gnuuid.New(name).String()
 		batch = append(batch, vsi)
 		if count == batchSize {
 			count = 0

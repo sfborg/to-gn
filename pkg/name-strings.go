@@ -29,6 +29,11 @@ func (t *togn) processNameStrings() error {
 		if err != nil {
 			slog.Error("GetNames", "error", err)
 		}
+
+		close(chN)
+		close(chC)
+		close(chCF)
+		close(chCS)
 		return err
 	})
 
@@ -84,6 +89,7 @@ func (t *togn) processNameIndices() error {
 	g, ctx := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
+		defer close(chIdx)
 		err = t.sf.GetNameIndices(ctx, chIdx)
 		if err != nil {
 			slog.Error("GetNameIndices", "error", err)

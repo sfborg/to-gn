@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gnames/gnidump/pkg/ent/model"
 )
 
@@ -83,9 +84,10 @@ func (g *gnio) SetNameIndices(
 
 	var recNum int
 	columns := []string{
-		"data_source_id", "record_id", "local_id", "global_id", "name_string_id",
-		"outlink_id", "code_id", "rank", "accepted_record_id",
+		"data_source_id", "record_id", "name_id", "local_id", "global_id",
+		"name_string_id", "outlink_id", "code_id", "rank", "accepted_record_id",
 		"classification", "classification_ids", "classification_ranks",
+		"taxonomic_status",
 	}
 	for nsi := range chIdx {
 		recNum += len(nsi)
@@ -98,11 +100,11 @@ func (g *gnio) SetNameIndices(
 			}
 
 			row := []any{
-				g.cfg.DataSourceID, nsi[i].RecordID, nsi[i].LocalID,
+				g.cfg.DataSourceID, nsi[i].RecordID, nsi[i].NameID, nsi[i].LocalID,
 				nsi[i].GlobalID, nsi[i].NameStringID, nsi[i].OutlinkID,
 				nsi[i].CodeID, nsi[i].Rank, acceptedID,
 				nsi[i].Classification, nsi[i].ClassificationIDs,
-				nsi[i].ClassificationRanks,
+				nsi[i].ClassificationRanks, nsi[i].TaxonomicStatus,
 			}
 
 			rows = append(rows, row)
@@ -126,7 +128,11 @@ func (g *gnio) SetNameIndices(
 		progressReport(recNum, "name-string indices")
 	}
 	fmt.Fprintf(os.Stderr, "\r%s\r", strings.Repeat(" ", 80))
-	slog.Info("Finished exporting name indices", "names-num", recNum)
+	slog.Info(
+		"Finished exporting name indices",
+		"names-num",
+		humanize.Comma(int64(recNum)),
+	)
 	return nil
 }
 
@@ -147,7 +153,7 @@ func (g *gnio) cleanNSIData(ctx context.Context) error {
 }
 
 func progressReport(recNum int, ent string) {
-	str := fmt.Sprintf("Exported %d %s", recNum, ent)
+	str := fmt.Sprintf("Exported %s %s", humanize.Comma(int64(recNum)), ent)
 	fmt.Fprintf(os.Stderr, "\r%s", strings.Repeat(" ", 80))
 	fmt.Fprintf(os.Stderr, "\r%s", str)
 }

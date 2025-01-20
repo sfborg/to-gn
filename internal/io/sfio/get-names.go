@@ -11,8 +11,6 @@ import (
 	"github.com/gnames/gnidump/pkg/ent/model"
 	"github.com/gnames/gnparser/ent/parsed"
 	"github.com/gnames/gnuuid"
-	"github.com/sfborg/to-gn/internal/ent/code"
-	"github.com/sfborg/to-gn/internal/ent/ds"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -24,9 +22,14 @@ func (s *sfio) GetNames(
 	chCF chan<- []model.CanonicalFull,
 	chCS chan<- []model.CanonicalStem,
 ) error {
-
 	chIn := make(chan string)
 	var wg sync.WaitGroup
+
+	// temporary table caches scientific name parsing results
+	err := s.setTempParserTable()
+	if err != nil {
+		return err
+	}
 
 	for i := 0; i < s.cfg.JobsNum; i++ {
 		wg.Add(1)
@@ -36,103 +39,21 @@ func (s *sfio) GetNames(
 		})
 	}
 
-	g.Go(func() error {
-		return s.loadNames(ctx, chIn)
-	})
-
-	// close chOut when all workers are done
-	go func() {
-		wg.Wait()
-		close(chN)
-		close(chC)
-		close(chCF)
-		close(chCS)
-	}()
-
-	return nil
-}
-
-func (s *sfio) GetNameIndices(
-	ctx context.Context,
-	chIdx chan<- []model.NameStringIndex) error {
-	batchSize := 50_000
-
-	q := `
-    SELECT DISTINCT
-			dwc_taxon_id, dwc_scientific_name_id, local_id, global_id,
-	    canonical, canonical_full,
-	    dwc_taxon_rank, dwc_accepted_name_usage_id,  
-	    dwc_higher_classification, higher_classification_ids,
-	    higher_classification_ranks, dwc_nomenclatural_code
-    FROM core
-	`
-	rows, err := s.db.Query(q)
+	err = s.loadNames(ctx, chIn)
+	close(chIn)
 	if err != nil {
-		slog.Error("Cannot get SFGA name string indices query", "error", err)
 		return err
 	}
-	defer rows.Close()
 
-	dsi, dsExists := ds.DataSourcesInfoMap[s.cfg.DataSourceID]
-
-	batch := make([]model.NameStringIndex, 0, batchSize)
-	var count int
-	var nomCode string
-	for rows.Next() {
-		nsi := model.NameStringIndex{DataSourceID: s.cfg.DataSourceID}
-		var canonical, canonicalFull string
-		count++
-		err = rows.Scan(
-			&nsi.RecordID, &nsi.NameStringID, &nsi.LocalID, &nsi.GlobalID,
-			&canonical, &canonicalFull,
-			&nsi.Rank, &nsi.AcceptedRecordID,
-			&nsi.Classification, &nsi.ClassificationIDs,
-			&nsi.ClassificationRanks,
-			&nomCode,
-		)
-		if err != nil {
-			slog.Error("Cannot read name string index row", "error", err)
-			return err
-		}
-
-		nsi.OutlinkID = ""
-		if dsExists && dsi.OutlinkID != nil {
-			ns := ds.NameInfo{
-				RecordID:         nsi.RecordID,
-				AcceptedRecordID: nsi.AcceptedRecordID,
-				LocalID:          nsi.LocalID,
-				GlobalID:         nsi.GlobalID,
-				Canonical:        canonical,
-				CanonicalFull:    canonicalFull,
-			}
-			nsi.OutlinkID = dsi.OutlinkID(ns)
-		}
-		nsi.CodeID = code.ToID(nomCode)
-		batch = append(batch, nsi)
-		if count == batchSize {
-			count = 0
-			chIdx <- batch
-			batch = batch[:0]
-		}
-		// Check for context cancellation periodically
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
-	}
-	if len(batch) > 0 {
-		chIdx <- batch
-	}
-	close(chIdx)
+	wg.Wait()
 	return nil
 }
 
 func (s *sfio) loadNames(ctx context.Context, chIn chan<- string) error {
 	q := `
-    SELECT distinct dwc_scientific_name
-	    FROM core
-	    ORDER BY dwc_scientific_name
+    SELECT distinct gn_scientific_name_string
+	    FROM name
+	    ORDER BY gn_scientific_name_string
 	`
 	rows, err := s.db.Query(q)
 	if err != nil {
@@ -160,7 +81,6 @@ func (s *sfio) loadNames(ctx context.Context, chIn chan<- string) error {
 		chIn <- name
 
 	}
-	close(chIn)
 	return nil
 }
 
@@ -328,4 +248,21 @@ func parseYear(p parsed.Parsed) sql.NullInt16 {
 		return res
 	}
 	return sql.NullInt16{Int16: int16(yrInt), Valid: true}
+}
+
+func (s *sfio) setTempParserTable() error {
+	q := `
+CREATE TEMPORARY TABLE parsed_temp (
+  gn_scientific_name_string string PRIMARY KEY,
+	id string NOT NULL,
+  canonical TEXT DEFAULT '',
+  canonical_full TEXT DEFAULT ''
+)
+`
+	_, err := s.db.Exec(q)
+	if err != nil {
+		slog.Error("Cannot create parsed_temp table", "error", err)
+		return err
+	}
+	return nil
 }

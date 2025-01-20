@@ -14,9 +14,10 @@ func TestInit(t *testing.T) {
 	assert := assert.New(t)
 
 	cfg := config.New()
+	config.LoadEnv(&cfg)
 	db := dbio.New(cfg.CacheDbDir)
 
-	sfgaPath := "../../../testdata/dinof.sql"
+	sfgaPath := "../../../testdata/182-gymno.sql"
 	a, err := archio.New(sfgaPath, cfg.CacheDir)
 	assert.Nil(err)
 	sf := sfio.New(cfg, a, db)

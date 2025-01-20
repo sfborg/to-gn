@@ -18,14 +18,19 @@ type sfio struct {
 	db      *sql.DB
 	ds      *ds.DataSourceInfo
 	gnpPool chan gnparser.GNparser
+
+	// hierarchy is used when core contains parent-child relationship to
+	// represent a hierarchy.
+	hierarchy map[string]*hNode
 }
 
 func New(cfg config.Config, arch sfga.Archive, db sfga.DB) sf.SF {
 	res := &sfio{
-		cfg:     cfg,
-		arch:    arch,
-		sdb:     db,
-		gnpPool: gnparser.NewPool(gnparser.NewConfig(), cfg.JobsNum),
+		cfg:       cfg,
+		arch:      arch,
+		sdb:       db,
+		gnpPool:   gnparser.NewPool(gnparser.NewConfig(), cfg.JobsNum),
+		hierarchy: make(map[string]*hNode),
 	}
 	if ds, ok := ds.DataSourcesInfoMap[cfg.DataSourceID]; ok {
 		res.ds = &ds

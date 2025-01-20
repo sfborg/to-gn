@@ -7,6 +7,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// SF represents SFGA archive and export functions
 type SF interface {
 	// Initializes SFGArchive and its database.
 	Init() error
@@ -14,7 +15,8 @@ type SF interface {
 	// VersionSFGA returns the schema version of SFGArchive.
 	VersionSFGA() string
 
-	// GetNames gets unique name-strings
+	// GetNames gets unique name-strings, parses them and creates
+	// model for export to GNverifier.
 	GetNames(
 		g *errgroup.Group,
 		ctx context.Context,
