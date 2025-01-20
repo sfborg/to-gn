@@ -5,7 +5,18 @@ import (
 	"path/filepath"
 )
 
-var verSFGA = "v1.2.6"
+var (
+	// repoURL is the URL to the SFGA schema repository.
+	repoURL = "https://github.com/sfborg/sfga"
+
+	// tag of the sfga repo to get correct schema version.
+	verSFGA = "v0.3.18"
+
+	// schemaHash is the sha256 sum of the correponding schema version.
+	schemaHash = "bc5379b0bb5e5d3"
+	// jobsNum is the default number of concurrent jobs to run.
+	jobsNum = 5
+)
 
 type Config struct {
 	// MinVersionSFGA sets minimal version of SFGA archive schema
