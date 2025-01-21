@@ -81,28 +81,34 @@ to a GlobalNames database.`,
 		sfgaPath := args[0]
 		slog.Info("Exporting SFGA data to GN database", "path", sfgaPath)
 
+		// initiate sfga db instance
 		sdb := dbio.New(cfg.CacheDbDir)
 
+		// initiate sfga file
 		sfga, err := archio.New(sfgaPath, cfg.CacheDir)
 		if err != nil {
 			slog.Error("Cannot initialize SFGA archive", "error", err)
 			os.Exit(1)
 		}
 
+		// initiate GNverifier dtabase
 		gn, err := gnio.New(cfg)
 		if err != nil {
 			slog.Error("Cannot initialize GN database", "error", err)
 			os.Exit(1)
 		}
 
+		// initiate SFGA archive
 		sf := sfio.New(cfg, sfga, sdb)
 
+		// initiate togn instance
 		tgn, err := togn.New(cfg, sf, gn)
 		if err != nil {
 			slog.Error("Cannot initialize ToGN instance", "error", err)
 			os.Exit(1)
 		}
 
+		// transfer SFGA data to GNverifier database
 		err = tgn.Export(sfgaPath)
 		if err != nil {
 			slog.Error("Cannot import sfga file to GN database",
