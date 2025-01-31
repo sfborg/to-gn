@@ -288,7 +288,7 @@ func (s *sfio) processNameStringIndexRow(
 	nsi.ClassificationRanks = cRank
 	nsi.ClassificationIDs = cID
 	dsi, hasDsi := dsinfo[s.cfg.DataSourceID]
-	if hasDsi {
+	if hasDsi && dsi.OutlinkID != nil {
 		nsi.OutlinkID = dsi.OutlinkID(nameInfo(nsi, parsed))
 	}
 	return &nsi, nil

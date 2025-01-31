@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.2.0] - 2025-01-30 Thu
 
 Add: [#13] use coldp-based SFGA for import.
+Fix: nil crash in get_name_indices.go.
 
 ## [v0.1.0] - 2024-10-09 Wed
 
