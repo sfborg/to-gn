@@ -237,7 +237,7 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 		IsOutlinkReady: true,
 		OutlinkURL:     "https://www.ipni.org/n/{}",
 		OutlinkID: func(n NameInfo) string {
-			return n.RecordID
+			return n.NameID
 		},
 	},
 	168: {
@@ -462,7 +462,7 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 		IsOutlinkReady: true,
 		OutlinkURL:     "https://www.mycobank.org/page/Name details page/{}",
 		OutlinkID: func(n NameInfo) string {
-			return n.RecordID
+			return n.NameID
 		},
 	},
 	204: {
