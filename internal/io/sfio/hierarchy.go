@@ -1,4 +1,4 @@
-package sfio
+jpackage sfio
 
 import (
 	"context"
@@ -163,6 +163,7 @@ func (s *sfio) breadcrumbsNodes(id string) []*hNode {
 
 	currID = id
 	for {
+		// parentID exists, but node with such ID does not
 		if node, ok = s.hierarchy[currID]; !ok {
 			if _, ok = badNodes[currID]; !ok {
 				badNodes[currID] = struct{}{}
@@ -172,12 +173,13 @@ func (s *sfio) breadcrumbsNodes(id string) []*hNode {
 			return res
 		}
 
+
+		res = append([]*hNode{node}, res...)
+
 		// set a trigger to get out
 		if node.parentID == "" {
 			return res
 		}
-
-		res = append([]*hNode{node}, res...)
 		currID = node.parentID
 	}
 }
