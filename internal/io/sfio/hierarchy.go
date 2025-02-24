@@ -1,4 +1,4 @@
-jpackage sfio
+package sfio
 
 import (
 	"context"
@@ -172,7 +172,6 @@ func (s *sfio) breadcrumbsNodes(id string) []*hNode {
 			}
 			return res
 		}
-
 
 		res = append([]*hNode{node}, res...)
 
