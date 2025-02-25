@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.2.0] - 2025-01-30 Thu
 
+Add: botanical code to parse hierachy's elements to fix parsing of
+     names like `Aus (Linnaeus` and return Aus instead of Linnaeus.
+Add: (origin/main, origin/HEAD) typo.
+Add: fix hierarchy for root elements.
+Add: fix links for IPNI and MycoBank.
+Add: fix nil crash in get-name-indices.go.
+Add: change eol outlink to name_id.
+Add: 
 Add: [#13] use coldp-based SFGA for import.
 Fix: nil crash in get_name_indices.go.
 

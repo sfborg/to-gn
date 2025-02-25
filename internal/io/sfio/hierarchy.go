@@ -11,6 +11,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gnames/coldp/ent/coldp"
 	"github.com/gnames/gnparser"
+	"github.com/gnames/gnparser/ent/nomcode"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -69,10 +70,9 @@ func (s *sfio) hierarchyWorker(
 	chIn <-chan coldp.NameUsage,
 	chOut chan<- *hNode,
 ) error {
-	p := <-s.gnpPool
-	defer func() {
-		s.gnpPool <- p
-	}()
+	// we use botanical code because we do not want names like
+	// `Aus (Linnaeus)` return `Linnaeus` as the uninomial.
+	p := gnparser.New(gnparser.NewConfig(gnparser.OptCode(nomcode.Botanical)))
 
 	for v := range chIn {
 		row, err := s.processHierarchyRow(p, v)
