@@ -125,6 +125,17 @@ var DataSourcesInfoMap = map[int]DataSourceInfo{
 			return n.RecordID
 		},
 	},
+	6: {
+		Title:          "USDA National Plant Germplasm System",
+		TitleShort:     "GRIN Plant Taxonomy",
+		UUID:           "a8259056-e178-4a35-a3e9-7c39969c2bd9",
+		HomeURL:        "https://npgsweb.ars-grin.gov/gringlobal/taxon/abouttaxonomy",
+		IsOutlinkReady: true,
+		OutlinkURL:     "https://npgsweb.ars-grin.gov/gringlobal/taxon/taxonomydetail?id={}",
+		OutlinkID: func(n NameInfo) string {
+			return n.RecordID
+		},
+	},
 	8: {
 		TitleShort: "IRMNG (old)",
 		UUID:       "f8e586aa-876e-4b0a-ab89-da0b4a64c19a",
