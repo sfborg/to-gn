@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gnames/gnidump/pkg/ent/model"
-	"github.com/sfborg/to-gn/internal/ent/ds"
+	"github.com/sfborg/to-gn/pkg/ds"
 )
 
 func (g *gnio) SetDataSource(d model.DataSource) error {

@@ -51,11 +51,11 @@ func (s *sfio) GetNames(
 
 func (s *sfio) loadNames(ctx context.Context, chIn chan<- string) error {
 	q := `
-    SELECT distinct gn_scientific_name_string
+    SELECT distinct gn__scientific_name_string
 	    FROM name
-	    ORDER BY gn_scientific_name_string
+	    ORDER BY gn__scientific_name_string
 	`
-	rows, err := s.db.Query(q)
+	rows, err := s.sfga.Db().Query(q)
 	if err != nil {
 		slog.Error("Cannot run SFGA names query", "error", err)
 		return err
@@ -253,13 +253,13 @@ func parseYear(p parsed.Parsed) sql.NullInt16 {
 func (s *sfio) setTempParserTable() error {
 	q := `
 CREATE TEMPORARY TABLE parsed_temp (
-  gn_scientific_name_string string PRIMARY KEY,
+  gn__scientific_name_string string PRIMARY KEY,
 	id string NOT NULL,
   canonical TEXT DEFAULT '',
   canonical_full TEXT DEFAULT ''
 )
 `
-	_, err := s.db.Exec(q)
+	_, err := s.sfga.Db().Exec(q)
 	if err != nil {
 		slog.Error("Cannot create parsed_temp table", "error", err)
 		return err

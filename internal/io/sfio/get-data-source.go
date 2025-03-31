@@ -7,8 +7,12 @@ import (
 func (s *sfio) GetDataSource(
 	ds *model.DataSource) error {
 	var err error
-	q := "SELECT title, description, doi from metadata limit 1"
-	row := s.db.QueryRow(q)
+	q := `
+SELECT col__title, col__description, col__doi
+  FROM metadata
+  LIMIT 1
+`
+	row := s.sfga.Db().QueryRow(q)
 	err = row.Scan(&ds.Title, &ds.Description, &ds.DOI)
 	if err != nil {
 		return err

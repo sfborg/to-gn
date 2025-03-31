@@ -21,9 +21,9 @@ func (s *sfio) GetVernNames(
 	// we need to make sure that batch can fit the insert query
 	batchSize := paramsLimit / 2
 	q := `
-    SELECT DISTINCT name FROM vernacular
+    SELECT DISTINCT col__name FROM vernacular
 	`
-	rows, err := s.db.Query(q)
+	rows, err := s.sfga.Db().Query(q)
 	if err != nil {
 		slog.Error("Cannot get SFGA vernacuar names query", "error", err)
 		return err
@@ -69,11 +69,11 @@ func (s *sfio) GetVernIndices(
 
 	q := `
     SELECT DISTINCT
-     v.taxon_id, v.name, v.language,
-	   v.area, v.country
+     v.col__taxon_id, v.col__name, v.col__language,
+	   v.col__area, v.col__country
     FROM vernacular v
 	`
-	rows, err := s.db.Query(q)
+	rows, err := s.sfga.Db().Query(q)
 	if err != nil {
 		slog.Error("Cannot get SFGA vernacuar name indices query", "error", err)
 		return err

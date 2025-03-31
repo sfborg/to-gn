@@ -32,8 +32,8 @@ type Config struct {
 	// SFGA data.
 	CacheDir string
 
-	// CacheDbDir is where SFGA database is downloaded.
-	CacheDbDir string
+	// SfgaDir is where SFGA database is downloaded.
+	SfgaDir string
 
 	// DbDatabase is the name of the GN databsae, default is `gnames`.
 	DbDatabase string
@@ -123,6 +123,6 @@ func New(opts ...Option) Config {
 		opt(&res)
 	}
 
-	res.CacheDbDir = filepath.Join(cacheDir, "db")
+	res.SfgaDir = filepath.Join(cacheDir, "db")
 	return res
 }

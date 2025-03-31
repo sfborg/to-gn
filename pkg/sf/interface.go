@@ -10,7 +10,7 @@ import (
 // SF represents SFGA archive and export functions
 type SF interface {
 	// Initializes SFGArchive and its database.
-	Init() error
+	Init(sfgaPath string) error
 
 	// VersionSFGA returns the schema version of SFGArchive.
 	VersionSFGA() string

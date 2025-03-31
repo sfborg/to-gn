@@ -4,9 +4,9 @@ import (
 	"errors"
 	"log/slog"
 
-	"github.com/sfborg/to-gn/internal/ent/gn"
-	"github.com/sfborg/to-gn/internal/ent/sf"
 	"github.com/sfborg/to-gn/pkg/config"
+	"github.com/sfborg/to-gn/pkg/gn"
+	"github.com/sfborg/to-gn/pkg/sf"
 )
 
 type togn struct {
@@ -35,7 +35,7 @@ func New(cfg config.Config, sf sf.SF, gn gn.GN) (ToGN, error) {
 func (t *togn) Export(sfgaPath string) error {
 	var err error
 	slog.Info("Extracting SFGArchive")
-	t.sf.Init()
+	t.sf.Init(sfgaPath)
 
 	slog.Info("Exporting name strings")
 	err = t.processNameStrings()

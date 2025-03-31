@@ -10,7 +10,7 @@ import (
 	"github.com/gnames/gnidump/pkg/ent/model"
 	"github.com/gnames/gnparser"
 	"github.com/gnames/gnparser/ent/parsed"
-	"github.com/sfborg/to-gn/internal/ent/ds"
+	"github.com/sfborg/to-gn/pkg/ds"
 )
 
 var dsinfo = ds.DataSourcesInfoMap
@@ -76,15 +76,19 @@ func (s *sfio) queryTaxon(
 ) ([]model.NameStringIndex, error) {
 	q := `
 SELECT
-	t.id, t.id, n.id, n.gn_scientific_name_string, t.gn_global_id,
-	t.gn_local_id, n.code_id, n.rank_id, t.status_id
+	t.col__id, t.col__id, n.col__id, n.gn__scientific_name_string,
+	t.gn__global_id, t.gn__local_id, n.col__code_id, n.col__rank_id,
+	t.col__status_id, col__kingdom, col__phylum, col__subphylum,
+	col__class, col__subclass, col__order, col__suborder, col__superfamily,
+	col__family, col__subfamily, col__tribe, col__subtribe, t.col__genus,
+	col__subgenus, col__section, col__species
   FROM taxon t
 		JOIN name n
-			ON n.id = t.name_id
+			ON n.col__id = t.col__name_id
 	WHERE t.ROWID BETWEEN $1 AND $2
 `
 	res := make([]model.NameStringIndex, 0, offset)
-	rows, err := s.db.Query(q, start, start+offset)
+	rows, err := s.sfga.Db().Query(q, start, start+offset)
 	if err != nil {
 		slog.Error("Cannot run taxon query for NameStringIndex", "error", err)
 		return nil, err
@@ -129,15 +133,19 @@ func (s *sfio) querySynonym(
 ) ([]model.NameStringIndex, error) {
 	q := `
 SELECT
-	s.id, t.id, n.id, n.gn_scientific_name_string, t.gn_global_id,
-	t.gn_local_id, n.code_id, n.rank_id, s.status_id
+	s.col__id, t.col__id, n.col__id, n.gn__scientific_name_string,
+	t.gn__global_id, t.gn__local_id, n.col__code_id, n.col__rank_id,
+	s.col__status_id, col__kingdom, col__phylum, col__subphylum,
+	col__class, col__subclass, col__order, col__suborder, col__superfamily,
+	col__family, col__subfamily, col__tribe, col__subtribe, t.col__genus,
+	col__subgenus, col__section, col__species
   FROM synonym s
-	  JOIN taxon t ON s.taxon_id = t.id
-	  JOIN name n ON n.id = s.name_id
+	  JOIN taxon t ON s.col__taxon_id = t.col__id
+	  JOIN name n ON n.col__id = s.col__name_id
 	WHERE s.ROWID BETWEEN $1 AND $2
 `
 	res := make([]model.NameStringIndex, 0, offset)
-	rows, err := s.db.Query(q, start, start+offset)
+	rows, err := s.sfga.Db().Query(q, start, start+offset)
 	if err != nil {
 		slog.Error("Cannot run taxon query for NameStringIndex", "error", err)
 		return nil, err
@@ -181,21 +189,22 @@ func (s *sfio) queryBareNames(
 ) ([]model.NameStringIndex, error) {
 	q := `
 	SELECT 
-	  id, gn_scientific_name_string, scientific_name, code_id, rank_id
+	  col__id, gn__scientific_name_string, col__scientific_name,
+	  col__code_id, col__rank_id
 	  FROM name
 	    WHERE
-	      id NOT IN
-	      (SELECT DISTINCT name_id
+	      col__id NOT IN
+	      (SELECT DISTINCT col__name_id
 	         FROM (
-	           SELECT name_id FROM taxon
+	           SELECT col__name_id FROM taxon
 	             UNION ALL
-	           SELECT name_id FROM synonym
+	           SELECT col__name_id FROM synonym
 	         )
 	      )
 	      AND ROWID BETWEEN $1 AND $2
 `
 	res := make([]model.NameStringIndex, 0, offset)
-	rows, err := s.db.Query(q, start, start+offset)
+	rows, err := s.sfga.Db().Query(q, start, start+offset)
 	if err != nil {
 		slog.Error("Cannot run taxon query for NameStringIndex", "error", err)
 		return nil, err
@@ -268,11 +277,26 @@ func (s *sfio) processNameStringIndexRow(
 ) (*model.NameStringIndex, error) {
 	var nsi model.NameStringIndex
 	var name, code, rank string
+	var kingdom, phylum, subphylum, class, subclass, order, suborder string
+	var superfamily, family, subfamily, tribe, subtribe, genus string
+	var subgenus, section, species string
 
 	err := rows.Scan(
 		&nsi.RecordID, &nsi.AcceptedRecordID, &nsi.NameID,
 		&name, &nsi.GlobalID, &nsi.LocalID, &code, &rank, &nsi.TaxonomicStatus,
+		&kingdom, &phylum, &subphylum, &class, &subclass, &order,
+		&suborder, &superfamily, &family, &subfamily, &tribe, &subtribe,
+		&genus, &subgenus, &section, &species,
 	)
+
+	flatClsf := map[string]string{
+		"kingdom": kingdom, "phylum": phylum, "subphylum": subphylum,
+		"class": class, "subclass": subclass, "order": order, "suborder": suborder,
+		"superfamily": superfamily, "family": family, "subfamily": subfamily,
+		"tribe": tribe, "subtribe": subtribe, "genus": genus,
+		"subgenus": subgenus, "section": section, "species": species,
+	}
+
 	if err != nil {
 		slog.Error("Cannot get taxon data for NameStringIndex", "error", err)
 		return nil, err
@@ -283,10 +307,11 @@ func (s *sfio) processNameStringIndexRow(
 	nsi.Rank = strNorm(rank)
 	parsed := p.ParseName(name)
 	nsi.NameStringID = parsed.VerbatimID
-	c, cRank, cID := s.getBreadcrumbs(nsi.AcceptedRecordID)
+	c, cRank, cID := s.getBreadcrumbs(nsi.AcceptedRecordID, flatClsf)
 	nsi.Classification = c
 	nsi.ClassificationRanks = cRank
 	nsi.ClassificationIDs = cID
+
 	dsi, hasDsi := dsinfo[s.cfg.DataSourceID]
 	if hasDsi && dsi.OutlinkID != nil {
 		nsi.OutlinkID = dsi.OutlinkID(nameInfo(nsi, parsed))

@@ -2,6 +2,8 @@ module github.com/sfborg/to-gn
 
 go 1.24.1
 
+replace github.com/gnames/sflib => ../sflib
+
 require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/gnames/coldp v0.3.15
@@ -12,7 +14,7 @@ require (
 	github.com/gnames/gnuuid v0.2.0
 	github.com/jackc/pgx/v5 v5.7.4
 	github.com/lmittmann/tint v1.0.7
-	github.com/sfborg/sflib v0.1.7
+	github.com/sfborg/sflib v0.3.2
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/cobra-cli v1.3.0
 	github.com/spf13/viper v1.20.1
@@ -59,6 +61,7 @@ require (
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.61.13 // indirect
 	modernc.org/mathutil v1.7.1 // indirect

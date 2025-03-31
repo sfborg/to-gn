@@ -3,8 +3,8 @@ package sfio_test
 import (
 	"testing"
 
-	"github.com/sfborg/sflib/io/archio"
-	"github.com/sfborg/sflib/io/dbio"
+	"github.com/sfborg/sflib"
+	"github.com/sfborg/to-gn/internal/io"
 	"github.com/sfborg/to-gn/internal/io/sfio"
 	"github.com/sfborg/to-gn/pkg/config"
 	"github.com/stretchr/testify/assert"
@@ -15,13 +15,14 @@ func TestInit(t *testing.T) {
 
 	cfg := config.New()
 	config.LoadEnv(&cfg)
-	db := dbio.New(cfg.CacheDbDir)
+
+	err := io.ResetCache(cfg)
+	assert.Nil(err)
+	sfga := sflib.NewSfga()
 
 	sfgaPath := "../../../testdata/182-gymno.sql"
-	a, err := archio.New(sfgaPath, cfg.CacheDir)
-	assert.Nil(err)
-	sf := sfio.New(cfg, a, db)
-	err = sf.Init()
+	sf := sfio.New(cfg, sfga)
+	err = sf.Init(sfgaPath)
 	assert.Nil(err)
 
 	ver := sf.VersionSFGA()

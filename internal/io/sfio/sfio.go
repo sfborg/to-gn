@@ -1,21 +1,18 @@
 package sfio
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/gnames/gnparser"
-	"github.com/sfborg/sflib/ent/sfga"
-	"github.com/sfborg/to-gn/internal/ent/ds"
-	"github.com/sfborg/to-gn/internal/ent/sf"
+	"github.com/sfborg/sflib/pkg/sfga"
 	"github.com/sfborg/to-gn/pkg/config"
+	"github.com/sfborg/to-gn/pkg/ds"
+	"github.com/sfborg/to-gn/pkg/sf"
 )
 
 type sfio struct {
 	cfg     config.Config
-	arch    sfga.Archive
-	sdb     sfga.DB
-	db      *sql.DB
+	sfga    sfga.Archive
 	ds      *ds.DataSourceInfo
 	gnpPool chan gnparser.GNparser
 
@@ -24,11 +21,10 @@ type sfio struct {
 	hierarchy map[string]*hNode
 }
 
-func New(cfg config.Config, arch sfga.Archive, db sfga.DB) sf.SF {
+func New(cfg config.Config, arch sfga.Archive) sf.SF {
 	res := &sfio{
 		cfg:       cfg,
-		arch:      arch,
-		sdb:       db,
+		sfga:      arch,
 		gnpPool:   gnparser.NewPool(gnparser.NewConfig(), cfg.JobsNum),
 		hierarchy: make(map[string]*hNode),
 	}
@@ -38,18 +34,18 @@ func New(cfg config.Config, arch sfga.Archive, db sfga.DB) sf.SF {
 	return res
 }
 
-func (s *sfio) Init() error {
-	err := s.arch.Extract()
+func (s *sfio) Init(sfgaPath string) error {
+	err := s.sfga.Fetch(sfgaPath, s.cfg.SfgaDir)
 	if err != nil {
 		return err
 	}
 
-	s.db, err = s.sdb.Connect()
+	_, err = s.sfga.Connect()
 	if err != nil {
 		return err
 	}
 
-	ver := s.sdb.Version()
+	ver := s.sfga.Version()
 	if ver == "" || ver < s.cfg.MinVersionSFGA {
 		err = fmt.Errorf("Incompatible SFGA schema version: '%s'", ver)
 	}
@@ -58,5 +54,5 @@ func (s *sfio) Init() error {
 }
 
 func (s *sfio) VersionSFGA() string {
-	return s.sdb.Version()
+	return s.sfga.Version()
 }

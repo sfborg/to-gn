@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/sfborg/to-gn/internal/ent/gn"
 	"github.com/sfborg/to-gn/pkg/config"
+	"github.com/sfborg/to-gn/pkg/gn"
 )
 
 type gnio struct {

@@ -138,8 +138,15 @@ func (s *sfio) createHierarchy(ctx context.Context, chOut <-chan *hNode) error {
 	return nil
 }
 
-func (s *sfio) getBreadcrumbs(id string) (bcTx, bcRnk, bcIdx string) {
+func (s *sfio) getBreadcrumbs(
+	id string,
+	flatClsf map[string]string,
+) (bcTx, bcRnk, bcIdx string) {
 	nodes := s.breadcrumbsNodes(id)
+
+	if len(nodes) < 2 {
+		nodes = getFlatClsf(flatClsf, nodes)
+	}
 
 	ts := make([]string, len(nodes))
 	rs := make([]string, len(nodes))
@@ -152,6 +159,35 @@ func (s *sfio) getBreadcrumbs(id string) (bcTx, bcRnk, bcIdx string) {
 	}
 
 	return strings.Join(ts, "|"), strings.Join(rs, "|"), strings.Join(is, "|")
+}
+
+func getFlatClsf(flatClsf map[string]string, nodes []*hNode) []*hNode {
+	var res []*hNode
+	ranks := []string{
+		"kingdom",
+		"phylum",
+		"subphylum",
+		"class",
+		"order",
+		"suborder",
+		"superfamily",
+		"family",
+		"subfamily",
+		"tribe",
+		"subtribe",
+		"genus",
+		"subgenus",
+		"section",
+		"species",
+	}
+	for _, rank := range ranks {
+		name := flatClsf[rank]
+		if name != "" {
+			res = append(res, &hNode{name: name, rank: rank})
+		}
+	}
+	res = append(res, nodes...)
+	return res
 }
 
 func (s *sfio) breadcrumbsNodes(id string) []*hNode {
@@ -188,10 +224,12 @@ func (s *sfio) loadNameUsage(
 	chIn chan<- coldp.NameUsage,
 ) error {
 	q := `
-SELECT t.id, t.parent_id, t.status_id, n.scientific_name, n.rank_id 
-	FROM taxon t join name n on n.id = t.name_id
+SELECT t.col__id, t.col__parent_id, t.col__status_id, n.col__scientific_name,
+	n.col__rank_id
+	FROM taxon t
+	  JOIN name n on n.col__id = t.col__name_id
 `
-	rows, err := s.db.Query(q)
+	rows, err := s.sfga.Db().Query(q)
 	if err != nil {
 		slog.Error("Cannot run SFGA hierarchy query", "error", err)
 		return err
