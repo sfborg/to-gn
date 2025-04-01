@@ -9,7 +9,7 @@ require (
 	github.com/gnames/coldp v0.3.15
 	github.com/gnames/gnidump v0.3.5
 	github.com/gnames/gnlib v0.47.0
-	github.com/gnames/gnparser v1.11.4
+	github.com/gnames/gnparser v1.11.5
 	github.com/gnames/gnsys v0.3.8
 	github.com/gnames/gnuuid v0.2.0
 	github.com/jackc/pgx/v5 v5.7.4
@@ -63,8 +63,8 @@ require (
 	golang.org/x/text v0.23.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.61.13 // indirect
+	modernc.org/libc v1.62.1 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.9.1 // indirect
-	modernc.org/sqlite v1.36.3 // indirect
+	modernc.org/sqlite v1.37.0 // indirect
 )
