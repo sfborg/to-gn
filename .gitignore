@@ -3,6 +3,7 @@
 #
 # direnv file
 .envrc
+reparse.log
 
 # Binaries for programs and plugins
 *.exe

@@ -30,6 +30,9 @@ func (g *gnio) SetVernNames(
 		count := 1
 		for i := range v {
 			id, name := v[i][0], v[i][1]
+			if len(name) > 255 {
+				name = name[:255]
+			}
 			vals = append(vals, id, name)
 			valsQ[i] = fmt.Sprintf("($%d, $%d)", count, count+1)
 			count += len(v[i])
