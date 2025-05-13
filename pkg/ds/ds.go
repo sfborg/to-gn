@@ -45,7 +45,7 @@ var (
 	// curatedAry is list of data-source IDs were (as we believe) data is
 	// curated by a specialist to a significant degree.
 	curatedAry = []int{1, 2, 3, 5, 6, 9, 105, 147, 132, 151, 155,
-		163, 165, 167, 172, 173, 174, 175, 176, 177, 181, 183, 184, 185,
+		163, 165, 167, 172, 173, 174, 175, 176, 177, 180, 181, 183, 184, 185,
 		187, 188, 189, 193, 195, 196, 197, 201, 203, 204, 205, 208, 209, 210}
 
 	// autoCuratedAry is a list of data-source IDs where (as we believe)
@@ -56,7 +56,7 @@ var (
 	// a classification data associated with a name.
 	hasClassifAry = []int{1, 3, 5, 6, 7, 8, 9, 10, 11, 112, 124, 126, 129,
 		131, 136, 137, 140, 141, 143, 144, 147, 148, 152, 154, 156, 157, 158, 161,
-		163, 170, 172, 174, 175, 181, 182, 184, 193, 195, 196, 197, 198, 202,
+		163, 170, 172, 174, 175, 180, 181, 182, 184, 193, 195, 196, 197, 198, 202,
 		204, 208, 209, 210}
 )
 
