@@ -72,10 +72,22 @@ func (g *gnio) SetVernIndices(
 	for vsi := range chIdx {
 		rows := make([][]any, 0, len(vsi))
 		for i := range vsi {
+			lang := vsi[i].Language
+			if len(lang) > 255 {
+				lang = lang[:253] + "…"
+			}
+			locality := vsi[i].Locality
+			if len(locality) > 255 {
+				locality = locality[:253] + "…"
+			}
+			country := vsi[i].CountryCode
+			if len(country) > 50 {
+				country = country[:48] + "…"
+			}
 			row := []any{
 				g.cfg.DataSourceID, vsi[i].RecordID, vsi[i].VernacularStringID,
-				vsi[i].Language, vsi[i].LangCode, vsi[i].Locality,
-				vsi[i].CountryCode}
+				lang, vsi[i].LangCode, locality,
+				country}
 
 			rows = append(rows, row)
 		}
