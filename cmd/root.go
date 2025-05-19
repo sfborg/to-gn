@@ -64,7 +64,7 @@ to a GlobalNames database.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		versionFlag(cmd)
 		flags := []flagFunc{
-			dataSourceFlag, dataSourceReleaseFlag, jobsNumFlag,
+			dataSourceFlag, dataSourceReleaseFlag, jobsNumFlag, flatFlag,
 		}
 		for _, v := range flags {
 			v(cmd)
@@ -137,6 +137,10 @@ func init() {
 	)
 	rootCmd.Flags().IntP("jobs-number", "j", 0, "Concurrent jobs number")
 	rootCmd.Flags().BoolP("version", "V", false, "Show version number")
+	rootCmd.Flags().BoolP(
+		"flat-classification", "f", false,
+		"Prefer flat classification over parent/child",
+	)
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -155,6 +159,7 @@ func initConfig() {
 	viper.BindEnv("DbUser", "TO_GN_DB_USER")
 	viper.BindEnv("DbPass", "TO_GN_DB_PASS")
 	viper.BindEnv("JobsNum", "TO_GN_JOBS_NUM")
+	viper.BindEnv("WithFlatClassification", "TO_GN_WITH_FLAT_CLASSIFICATION")
 	viper.AutomaticEnv()
 
 	configPath := filepath.Join(configDir, fmt.Sprintf("%s.yaml", configFile))

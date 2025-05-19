@@ -142,7 +142,11 @@ func (s *sfio) getBreadcrumbs(
 	id string,
 	flatClsf map[string]string,
 ) (bcTx, bcRnk, bcIdx string) {
-	nodes := s.breadcrumbsNodes(id)
+
+	var nodes []*hNode
+	if !s.cfg.WithFlatClassification {
+		nodes = s.breadcrumbsNodes(id)
+	}
 
 	if len(nodes) < 2 {
 		nodes = getFlatClsf(flatClsf, nodes)

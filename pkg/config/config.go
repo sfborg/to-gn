@@ -52,6 +52,13 @@ type Config struct {
 
 	// BatchSize sets the size of batch for insert statements.
 	BatchSize int
+
+	// WithFlatClassification is true if the 'flat' version of classification
+	// is preferrable instead of parent/child classification. Note that if
+	// flat classification does not exist, the classification breadcrumbs will
+	// stay empty even if parent/child do exist. By default this option is
+	// false and parent/child classification is preferrable over 'flat' one.
+	WithFlatClassification bool
 }
 
 type Option func(*Config)
@@ -95,6 +102,12 @@ func OptDbPass(s string) Option {
 func OptJobsNum(i int) Option {
 	return func(cfg *Config) {
 		cfg.JobsNum = i
+	}
+}
+
+func OptWithFlatClassification(b bool) Option {
+	return func(cfg *Config) {
+		cfg.WithFlatClassification = b
 	}
 }
 

@@ -38,6 +38,13 @@ func versionFlag(cmd *cobra.Command) {
 	}
 }
 
+func flatFlag(cmd *cobra.Command) {
+	b, _ := cmd.Flags().GetBool("flat-classification")
+	if b {
+		opts = append(opts, config.OptWithFlatClassification(b))
+	}
+}
+
 func jobsNumFlag(cmd *cobra.Command) {
 	i, _ := cmd.Flags().GetInt("jobs-number")
 	if i > 0 {
