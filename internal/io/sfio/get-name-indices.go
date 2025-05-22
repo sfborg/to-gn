@@ -78,10 +78,14 @@ func (s *sfio) queryTaxon(
 SELECT
 	t.col__id, t.col__id, n.col__id, n.gn__scientific_name_string,
 	t.gn__global_id, t.gn__local_id, n.col__code_id, n.col__rank_id,
-	t.col__status_id, col__kingdom, col__phylum, col__subphylum,
-	col__class, col__subclass, col__order, col__suborder, col__superfamily,
-	col__family, col__subfamily, col__tribe, col__subtribe, t.col__genus,
-	col__subgenus, col__section, col__species
+	t.col__status_id, col__kingdom, sf__kingdom_id, col__phylum,
+	sf__phylum_id, col__subphylum, sf__subphylum_id, col__class,
+	sf__class_id, col__subclass, sf__subclass_id, col__order, sf__order_id,
+	col__suborder, sf__suborder_id, col__superfamily, sf__superfamily_id,
+	col__family, sf__family_id, col__subfamily, sf__subfamily_id,
+	col__tribe, sf__tribe_id, col__subtribe, sf__subtribe_id, t.col__genus,
+	sf__genus_id, col__subgenus, sf__subgenus_id, col__section,
+	sf__section_id, col__species, sf__species_id
   FROM taxon t
 		JOIN name n
 			ON n.col__id = t.col__name_id
@@ -135,10 +139,14 @@ func (s *sfio) querySynonym(
 SELECT
 	s.col__id, t.col__id, n.col__id, n.gn__scientific_name_string,
 	t.gn__global_id, t.gn__local_id, n.col__code_id, n.col__rank_id,
-	s.col__status_id, col__kingdom, col__phylum, col__subphylum,
-	col__class, col__subclass, col__order, col__suborder, col__superfamily,
-	col__family, col__subfamily, col__tribe, col__subtribe, t.col__genus,
-	col__subgenus, col__section, col__species
+	s.col__status_id, col__kingdom, sf__kingdom_id, col__phylum,
+	sf__phylum_id, col__subphylum, sf__subphylum_id, 
+	col__class, sf__class_id, col__subclass, sf__subclass_id, col__order,
+	sf__order_id, col__suborder, sf__suborder_id, col__superfamily,
+	sf__superfamily_id, col__family, sf__family_id, col__subfamily,
+	sf__subfamily_id, col__tribe, sf__tribe_id, col__subtribe,
+	sf__subtribe_id, t.col__genus, sf__genus_id, col__subgenus, sf__subgenus_id,
+	col__section, sf__section_id, col__species, sf__species_id
   FROM synonym s
 	  JOIN taxon t ON s.col__taxon_id = t.col__id
 	  JOIN name n ON n.col__id = s.col__name_id
@@ -280,13 +288,19 @@ func (s *sfio) processNameStringIndexRow(
 	var kingdom, phylum, subphylum, class, subclass, order, suborder string
 	var superfamily, family, subfamily, tribe, subtribe, genus string
 	var subgenus, section, species string
+	var kingdomID, phylumID, subphylumID, classID, subclassID, orderID string
+	var suborderID, superfamilyID, familyID, subfamilyID, tribeID string
+	var subtribeID, genusID, subgenusID, sectionID, speciesID string
 
 	err := rows.Scan(
 		&nsi.RecordID, &nsi.AcceptedRecordID, &nsi.NameID,
 		&name, &nsi.GlobalID, &nsi.LocalID, &code, &rank, &nsi.TaxonomicStatus,
-		&kingdom, &phylum, &subphylum, &class, &subclass, &order,
-		&suborder, &superfamily, &family, &subfamily, &tribe, &subtribe,
-		&genus, &subgenus, &section, &species,
+		&kingdom, &kingdomID, &phylum, &phylumID, &subphylum, &subphylumID,
+		&class, &classID, &subclass, &subclassID, &order, &orderID,
+		&suborder, &suborderID, &superfamily, &superfamilyID, &family, &familyID,
+		&subfamily, &subfamilyID, &tribe, &tribeID, &subtribe, &subtribeID,
+		&genus, &genusID, &subgenus, &subgenusID, &section, &sectionID, &species,
+		&speciesID,
 	)
 
 	flatClsf := map[string]string{
@@ -295,6 +309,12 @@ func (s *sfio) processNameStringIndexRow(
 		"superfamily": superfamily, "family": family, "subfamily": subfamily,
 		"tribe": tribe, "subtribe": subtribe, "genus": genus,
 		"subgenus": subgenus, "section": section, "species": species,
+		"kingdom_id": kingdomID, "phylum_id": phylumID, "subphylum_id": subphylumID,
+		"class_id": classID, "subclass_id": subclassID, "order_id": orderID,
+		"suborder_id": suborderID, "superfamily_id": superfamilyID,
+		"family_id": familyID, "subfamily_id": subfamilyID, "tribe_id": tribeID,
+		"subtribe_id": subtribeID, "genus_id": genusID, "subgenus_id": subgenusID,
+		"section_id": sectionID, "species_id": speciesID,
 	}
 
 	if err != nil {

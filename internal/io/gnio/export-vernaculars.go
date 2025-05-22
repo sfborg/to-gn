@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gnames/gnidump/pkg/ent/model"
+	"github.com/gnames/gnlib"
 )
 
 func (g *gnio) SetVernNames(
@@ -33,7 +34,8 @@ func (g *gnio) SetVernNames(
 			if len(name) > 255 {
 				name = name[:255]
 			}
-			vals = append(vals, id, name)
+			nameFixed := gnlib.FixUtf8(name)
+			vals = append(vals, id, nameFixed)
 			valsQ[i] = fmt.Sprintf("($%d, $%d)", count, count+1)
 			count += len(v[i])
 		}
@@ -80,6 +82,7 @@ func (g *gnio) SetVernIndices(
 			if len(locality) > 255 {
 				locality = locality[:253] + "…"
 			}
+			locality = gnlib.FixUtf8(locality)
 			country := vsi[i].CountryCode
 			if len(country) > 50 {
 				country = country[:48] + "…"

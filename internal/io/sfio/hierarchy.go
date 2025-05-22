@@ -10,8 +10,8 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gnames/coldp/ent/coldp"
+	"github.com/gnames/gnlib/ent/nomcode"
 	"github.com/gnames/gnparser"
-	"github.com/gnames/gnparser/ent/nomcode"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -186,8 +186,9 @@ func getFlatClsf(flatClsf map[string]string, nodes []*hNode) []*hNode {
 	}
 	for _, rank := range ranks {
 		name := flatClsf[rank]
+		id := flatClsf[rank+"_id"]
 		if name != "" {
-			res = append(res, &hNode{name: name, rank: rank})
+			res = append(res, &hNode{name: name, id: id, rank: rank})
 		}
 	}
 	res = append(res, nodes...)

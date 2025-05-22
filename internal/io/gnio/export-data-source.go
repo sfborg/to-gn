@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gnames/gnidump/pkg/ent/model"
+	"github.com/google/uuid"
 	"github.com/sfborg/to-gn/pkg/ds"
 )
 
@@ -14,10 +15,14 @@ func (g *gnio) SetDataSource(d model.DataSource) error {
 	dsi := ds.DataSourcesInfoMap[g.cfg.DataSourceID]
 	now := time.Now()
 	ctx := context.Background()
+	uid := dsi.UUID
+	if uid == "" {
+		uid = uuid.Nil.String()
+	}
 
 	res := model.DataSource{
 		ID:              g.cfg.DataSourceID,
-		UUID:            dsi.UUID,
+		UUID:            uid,
 		Title:           d.Title,
 		TitleShort:      dsi.TitleShort,
 		DOI:             d.DOI,
