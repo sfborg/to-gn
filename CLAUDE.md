@@ -9,6 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build and Development Commands
 
 ### Using Just (preferred)
+
 ```bash
 just deps              # Download Go dependencies
 just tools            # Install required tools from tools.go
@@ -19,18 +20,6 @@ just test             # Run tests with coverage
 just coverage         # Run tests and show coverage report
 just release          # Build cross-platform release binaries (Linux, macOS, Windows)
 just version          # Show current version from git tags
-```
-
-### Using Make (alternative)
-```bash
-make deps             # Download dependencies
-make tools            # Install tools
-make build            # Build development binary
-make buildrel         # Build release binary
-make install          # Install binary
-make test             # Run tests
-make coverage         # Coverage report
-make release          # Build all platform binaries
 ```
 
 ### Running Tests

@@ -8,17 +8,11 @@ The project uses the `cobra` library for command-line argument parsing and `vipe
 
 ## Building and Running
 
-The project includes both a `Makefile` and a `justfile`, providing a convenient way to manage common development tasks.
+The project includes a `Justfile`, providing a convenient way to manage common development tasks.
 
 ### Building the project
 
 To build the project, use one of the following commands:
-
-```bash
-make build
-```
-
-or
 
 ```bash
 just build
@@ -29,12 +23,6 @@ just build
 To install the binary, use one of the following commands:
 
 ```bash
-make install
-```
-
-or
-
-```bash
 just install
 ```
 
@@ -43,24 +31,12 @@ just install
 To run the tests, use one of the following commands:
 
 ```bash
-make test
-```
-
-or
-
-```bash
 just test
 ```
 
 ### Creating a release
 
 To create a release for different operating systems, use one of the following commands:
-
-```bash
-make release
-```
-
-or
 
 ```bash
 just release
